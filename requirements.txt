@@ -1,0 +1,11 @@
+pandas
+scikit-learn
+xgboost
+shap
+evidently
+great-expectations
+mlflow
+dvc
+fastapi
+uvicorn
+pytest
