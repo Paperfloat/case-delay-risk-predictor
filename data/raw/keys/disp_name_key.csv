@@ -1,0 +1,463 @@
+year,disp_name,disp_name_s,count
+2010,1,"258 crpc",15765
+2010,2,"abated",22021
+2010,3,"absconded",16773
+2010,4,"acquitted",406015
+2010,5,"allowed",244023
+2010,6,"appeal accepted",670
+2010,7,"award",31399
+2010,8,"bail granted",553
+2010,9,"bail refused",110
+2010,10,"bail rejected",6
+2010,11,"cancelled",338
+2010,12,"closed",79826
+2010,13,"committed",18426
+2010,14,"compounded",2373
+2010,15,"compromise",124493
+2010,16,"confession",10189
+2010,17,"contest-allowed",911
+2010,18,"converted",19007
+2010,19,"convicted",145668
+2010,20,"decided",50118
+2010,21,"died",1443
+2010,22,"dismissed",540748
+2010,23,"disposal in lok adalat",31046
+2010,24,"disposed",269861
+2010,25,"disposed-otherwise",261305
+2010,26,"disposition var missing",613527
+2010,27,"ex-parte",14818
+2010,28,"execution",167
+2010,29,"fine",61137
+2010,30,"judgement",353931
+2010,31,"not press",1866
+2010,32,"other",207716
+2010,33,"otherwise",70869
+2010,34,"p.o. consign",1489
+2010,35,"partly decreed",6161
+2010,36,"plea bargaining",5018
+2010,37,"plead guilty",24872
+2010,38,"prison",362
+2010,39,"probation",8293
+2010,40,"procedural",10184
+2010,41,"quash",1991
+2010,42,"referred to lok adalat",145648
+2010,43,"reject",75158
+2010,44,"remanded",1478
+2010,45,"settled",12701
+2010,46,"sine die",5103
+2010,47,"stayed",328
+2010,48,"transferred",214163
+2010,49,"uncontested",385
+2010,50,"untrace",10379
+2010,51,"withdrawn",140496
+2011,1,"258 crpc",20940
+2011,2,"abated",25759
+2011,3,"absconded",18073
+2011,4,"acquitted",483730
+2011,5,"allowed",349841
+2011,6,"appeal accepted",1071
+2011,7,"award",38998
+2011,8,"bail granted",597
+2011,9,"bail refused",216
+2011,10,"bail rejected",7
+2011,11,"cancelled",755
+2011,12,"closed",106342
+2011,13,"committed",18094
+2011,14,"compounded",3136
+2011,15,"compromise",143022
+2011,16,"confession",15616
+2011,17,"contest-allowed",1253
+2011,18,"converted",50132
+2011,19,"convicted",171397
+2011,20,"decided",75922
+2011,21,"died",1760
+2011,22,"dismissed",684800
+2011,23,"disposal in lok adalat",41204
+2011,24,"disposed",355885
+2011,25,"disposed-otherwise",259022
+2011,26,"disposition var missing",709349
+2011,27,"ex-parte",18573
+2011,28,"execution",301
+2011,29,"fine",68672
+2011,30,"judgement",379368
+2011,31,"not press",3552
+2011,32,"other",252099
+2011,33,"otherwise",73373
+2011,34,"p.o. consign",1884
+2011,35,"partly decreed",7641
+2011,36,"plea bargaining",9204
+2011,37,"plead guilty",33190
+2011,38,"prison",1440
+2011,39,"probation",11267
+2011,40,"procedural",15123
+2011,41,"quash",2511
+2011,42,"referred to lok adalat",172145
+2011,43,"reject",93157
+2011,44,"remanded",1994
+2011,45,"settled",17104
+2011,46,"sine die",5495
+2011,47,"stayed",449
+2011,48,"transferred",265835
+2011,49,"uncontested",605
+2011,50,"untrace",13503
+2011,51,"withdrawn",183247
+2012,1,"258 crpc",27825
+2012,2,"abated",30695
+2012,3,"absconded",21052
+2012,4,"acquitted",555492
+2012,5,"allowed",460683
+2012,6,"appeal accepted",1670
+2012,7,"award",40389
+2012,8,"bail granted",574
+2012,9,"bail refused",56
+2012,10,"bail rejected",348
+2012,11,"cancelled",1379
+2012,12,"closed",117756
+2012,13,"committed",23986
+2012,14,"compounded",3680
+2012,15,"compromise",174628
+2012,16,"confession",22476
+2012,17,"contest-allowed",1584
+2012,18,"converted",30724
+2012,19,"convicted",220785
+2012,20,"decided",114216
+2012,21,"died",2133
+2012,22,"dismissed",839733
+2012,23,"disposal in lok adalat",52905
+2012,24,"disposed",489363
+2012,25,"disposed-otherwise",238045
+2012,26,"disposition var missing",899879
+2012,27,"ex-parte",23292
+2012,28,"execution",300
+2012,29,"fine",121692
+2012,30,"judgement",410768
+2012,31,"not press",5550
+2012,32,"other",315037
+2012,33,"otherwise",92527
+2012,34,"p.o. consign",1918
+2012,35,"partly decreed",11101
+2012,36,"plea bargaining",5214
+2012,37,"plead guilty",52895
+2012,38,"prison",570
+2012,39,"probation",13971
+2012,40,"procedural",18670
+2012,41,"quash",3435
+2012,42,"referred to lok adalat",202137
+2012,43,"reject",117305
+2012,44,"remanded",2822
+2012,45,"settled",24927
+2012,46,"sine die",4566
+2012,47,"stayed",605
+2012,48,"transferred",350198
+2012,49,"uncontested",1132
+2012,50,"untrace",18366
+2012,51,"withdrawn",229729
+2013,1,"258 crpc",40371
+2013,2,"abated",32990
+2013,3,"absconded",17989
+2013,4,"acquitted",577297
+2013,5,"allowed",591410
+2013,6,"appeal accepted",1859
+2013,7,"award",45904
+2013,8,"bail granted",2051
+2013,9,"bail refused",91
+2013,10,"bail rejected",1637
+2013,11,"cancelled",1540
+2013,12,"closed",128838
+2013,13,"committed",37740
+2013,14,"compounded",5773
+2013,15,"compromise",199059
+2013,16,"confession",45866
+2013,17,"contest-allowed",1905
+2013,18,"converted",15102
+2013,19,"convicted",327840
+2013,20,"decided",124846
+2013,21,"died",1742
+2013,22,"dismissed",885011
+2013,23,"disposal in lok adalat",73672
+2013,24,"disposed",538697
+2013,25,"disposed-otherwise",242324
+2013,26,"disposition var missing",1244271
+2013,27,"ex-parte",26770
+2013,28,"execution",361
+2013,29,"fine",166438
+2013,30,"judgement",422495
+2013,31,"not press",6833
+2013,32,"other",367733
+2013,33,"otherwise",83171
+2013,34,"p.o. consign",2400
+2013,35,"partly decreed",7306
+2013,36,"plea bargaining",4806
+2013,37,"plead guilty",110164
+2013,38,"prison",743
+2013,39,"probation",18970
+2013,40,"procedural",25795
+2013,41,"quash",4106
+2013,42,"referred to lok adalat",261011
+2013,43,"reject",131991
+2013,44,"remanded",3830
+2013,45,"settled",31636
+2013,46,"sine die",5228
+2013,47,"stayed",838
+2013,48,"transferred",392113
+2013,49,"uncontested",1658
+2013,50,"untrace",16890
+2013,51,"withdrawn",276506
+2014,1,"258 crpc",47556
+2014,2,"abated",33578
+2014,3,"absconded",12722
+2014,4,"acquitted",584050
+2014,5,"allowed",767580
+2014,6,"appeal accepted",1923
+2014,7,"award",47183
+2014,8,"bail granted",2919
+2014,9,"bail refused",145
+2014,10,"bail rejected",1579
+2014,11,"cancelled",4848
+2014,12,"closed",140421
+2014,13,"committed",56158
+2014,14,"compounded",7756
+2014,15,"compromise",224978
+2014,16,"confession",78039
+2014,17,"contest-allowed",2177
+2014,18,"converted",15936
+2014,19,"convicted",397669
+2014,20,"decided",123900
+2014,21,"died",1606
+2014,22,"dismissed",957554
+2014,23,"disposal in lok adalat",87643
+2014,24,"disposed",596847
+2014,25,"disposed-otherwise",251855
+2014,26,"disposition var missing",1607071
+2014,27,"ex-parte",31360
+2014,28,"execution",246
+2014,29,"fine",268161
+2014,30,"judgement",386075
+2014,31,"not press",8885
+2014,32,"other",417764
+2014,33,"otherwise",75952
+2014,34,"p.o. consign",2723
+2014,35,"partly decreed",6707
+2014,36,"plea bargaining",6499
+2014,37,"plead guilty",211634
+2014,38,"prison",681
+2014,39,"probation",20074
+2014,40,"procedural",29860
+2014,41,"quash",5120
+2014,42,"referred to lok adalat",355052
+2014,43,"reject",165107
+2014,44,"remanded",3869
+2014,45,"settled",34321
+2014,46,"sine die",12785
+2014,47,"stayed",1012
+2014,48,"transferred",461920
+2014,49,"uncontested",1237
+2014,50,"untrace",19088
+2014,51,"withdrawn",294791
+2015,1,"258 crpc",65237
+2015,2,"abated",37605
+2015,3,"absconded",10380
+2015,4,"acquitted",562171
+2015,5,"allowed",881581
+2015,6,"appeal accepted",2119
+2015,7,"award",41673
+2015,8,"bail granted",2879
+2015,9,"bail refused",86
+2015,10,"bail rejected",1749
+2015,11,"cancelled",6386
+2015,12,"closed",126500
+2015,13,"committed",67386
+2015,14,"compounded",12046
+2015,15,"compromise",205710
+2015,16,"confession",111226
+2015,17,"contest-allowed",2743
+2015,18,"converted",13642
+2015,19,"convicted",455331
+2015,20,"decided",240180
+2015,21,"died",1976
+2015,22,"dismissed",961444
+2015,23,"disposal in lok adalat",80314
+2015,24,"disposed",698398
+2015,25,"disposed-otherwise",302348
+2015,26,"disposition var missing",2259042
+2015,27,"ex-parte",33456
+2015,28,"execution",350
+2015,29,"fine",414331
+2015,30,"judgement",341177
+2015,31,"not press",13333
+2015,32,"other",422885
+2015,33,"otherwise",93710
+2015,34,"p.o. consign",4662
+2015,35,"partly decreed",5951
+2015,36,"plea bargaining",8631
+2015,37,"plead guilty",274034
+2015,38,"prison",674
+2015,39,"probation",20962
+2015,40,"procedural",43202
+2015,41,"quash",6969
+2015,42,"referred to lok adalat",459290
+2015,43,"reject",198497
+2015,44,"remanded",4060
+2015,45,"settled",39466
+2015,46,"sine die",13690
+2015,47,"stayed",914
+2015,48,"transferred",580169
+2015,49,"uncontested",1100
+2015,50,"untrace",24861
+2015,51,"withdrawn",319350
+2016,1,"258 crpc",44490
+2016,2,"abated",33790
+2016,3,"absconded",8519
+2016,4,"acquitted",471271
+2016,5,"allowed",938736
+2016,6,"appeal accepted",2045
+2016,7,"award",35585
+2016,8,"bail granted",3744
+2016,9,"bail order",1
+2016,10,"bail refused",136
+2016,11,"bail rejected",2028
+2016,12,"cancelled",9291
+2016,13,"closed",112283
+2016,14,"committed",78107
+2016,15,"compounded",16692
+2016,16,"compromise",185068
+2016,17,"confession",119503
+2016,18,"contest-allowed",3088
+2016,19,"converted",13019
+2016,20,"convicted",432004
+2016,21,"decided",227913
+2016,22,"died",1369
+2016,23,"dismissed",820324
+2016,24,"disposal in lok adalat",71971
+2016,25,"disposed",711040
+2016,26,"disposed-otherwise",309716
+2016,27,"disposition var missing",3260488
+2016,28,"ex-parte",35926
+2016,29,"execution",154
+2016,30,"fine",558296
+2016,31,"judgement",306417
+2016,32,"not press",13267
+2016,33,"other",379463
+2016,34,"otherwise",61274
+2016,35,"p.o. consign",5389
+2016,36,"partly decreed",5450
+2016,37,"plea bargaining",12140
+2016,38,"plead guilty",283364
+2016,39,"prison",643
+2016,40,"probation",17218
+2016,41,"procedural",46800
+2016,42,"quash",7302
+2016,43,"referred to lok adalat",557311
+2016,44,"reject",218573
+2016,45,"remanded",3731
+2016,46,"settled",44599
+2016,47,"sine die",24030
+2016,48,"stayed",925
+2016,49,"transferred",518583
+2016,50,"uncontested",746
+2016,51,"untrace",28989
+2016,52,"withdrawn",306449
+2017,1,"258 crpc",37385
+2017,2,"abated",25592
+2017,3,"absconded",6975
+2017,4,"acquitted",371770
+2017,5,"allowed",1101941
+2017,6,"appeal accepted",2060
+2017,7,"award",23675
+2017,8,"bail granted",26412
+2017,9,"bail order",6
+2017,10,"bail refused",9308
+2017,11,"bail rejected",4565
+2017,12,"cancelled",15664
+2017,13,"closed",75719
+2017,14,"committed",84728
+2017,15,"compounded",17994
+2017,16,"compromise",133014
+2017,17,"confession",134817
+2017,18,"contest-allowed",3189
+2017,19,"converted",13753
+2017,20,"convicted",474365
+2017,21,"decided",260047
+2017,22,"died",1336
+2017,23,"dismissed",706392
+2017,24,"disposal in lok adalat",68035
+2017,25,"disposed",892083
+2017,26,"disposed-otherwise",288887
+2017,27,"disposition var missing",4521012
+2017,28,"ex-parte",36278
+2017,29,"execution",198
+2017,30,"fine",763001
+2017,31,"judgement",206664
+2017,32,"not press",13158
+2017,33,"other",350352
+2017,34,"otherwise",51371
+2017,35,"p.o. consign",4374
+2017,36,"partly decreed",3320
+2017,37,"plea bargaining",103087
+2017,38,"plead guilty",265563
+2017,39,"prison",294
+2017,40,"probation",27759
+2017,41,"procedural",84115
+2017,42,"quash",6785
+2017,43,"referred to lok adalat",720854
+2017,44,"reject",247832
+2017,45,"remanded",3396
+2017,46,"settled",56384
+2017,47,"sine die",18130
+2017,48,"stayed",408
+2017,49,"transferred",457022
+2017,50,"uncontested",741
+2017,51,"untrace",34043
+2017,52,"withdrawn",309660
+2018,1,"258 crpc",14443
+2018,2,"abated",15656
+2018,3,"absconded",2976
+2018,4,"acquitted",207801
+2018,5,"allowed",1104047
+2018,6,"appeal accepted",974
+2018,7,"award",12268
+2018,8,"bail granted",74272
+2018,9,"bail order",30
+2018,10,"bail refused",31767
+2018,11,"bail rejected",11693
+2018,12,"cancelled",26456
+2018,13,"closed",33458
+2018,14,"committed",78344
+2018,15,"compounded",15973
+2018,16,"compromise",73679
+2018,17,"confession",120545
+2018,18,"contest-allowed",2476
+2018,19,"converted",10942
+2018,20,"convicted",416122
+2018,21,"decided",246666
+2018,22,"died",1147
+2018,23,"dismissed",441631
+2018,24,"disposal in lok adalat",30708
+2018,25,"disposed",778906
+2018,26,"disposed-otherwise",332869
+2018,27,"disposition var missing",6338472
+2018,28,"ex-parte",19242
+2018,29,"execution",295
+2018,30,"fine",590995
+2018,31,"judgement",157219
+2018,32,"not press",12396
+2018,33,"other",245011
+2018,34,"otherwise",31384
+2018,35,"p.o. consign",5983
+2018,36,"partly decreed",742
+2018,37,"plea bargaining",339551
+2018,38,"plead guilty",233732
+2018,39,"prison",230
+2018,40,"probation",20500
+2018,41,"procedural",92398
+2018,42,"quash",2379
+2018,43,"referred to lok adalat",571902
+2018,44,"reject",268025
+2018,45,"remanded",2501
+2018,46,"settled",48661
+2018,47,"sine die",9934
+2018,48,"stayed",185
+2018,49,"transferred",394249
+2018,50,"uncontested",575
+2018,51,"untrace",29986
+2018,52,"withdrawn",221903

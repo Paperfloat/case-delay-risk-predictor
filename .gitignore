@@ -2,3 +2,11 @@ case-delay-env/
 __pycache__/
 .pytest_cache/
 .dvc/tmp/
+data/raw/cases/cases_2012.csv
+data/raw/*.tar.gz
+data/raw/cases/cases.tar.gz
+data/raw/keys/keys.tar.gz
+data/raw/judges_clean.tar.gz
+data/raw/acts_sections.tar.gz
+data/raw/keys/judge_case_merge_key.csv
+data/raw/keys/section_key.csv
