@@ -1,7 +1,7 @@
 {
   "expectations": [
     {
-      "id": "1cac1ad8-f734-495a-8060-1c0d0a670aad",
+      "id": "9ac3cf74-793b-43c6-ade6-3719c029ff81",
       "kwargs": {
         "column": "state_code"
       },
@@ -10,7 +10,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "abb7b8b2-2eb2-4e77-9608-35e19247d088",
+      "id": "79019869-ffd8-49bf-9e5d-c1a15f01ab57",
       "kwargs": {
         "column": "dist_code"
       },
@@ -19,7 +19,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "00100602-3f30-43ec-8f49-560286414c3a",
+      "id": "1e4fc6f3-5d88-481e-8089-28ff3e3092e4",
       "kwargs": {
         "column": "type_name"
       },
@@ -28,7 +28,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "e6a0c3cc-1441-4ae7-a848-4f0b429e6080",
+      "id": "abbbc019-bc37-4990-8fff-a803349b048a",
       "kwargs": {
         "column": "date_of_filing"
       },
@@ -37,7 +37,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "31d8608e-5f4e-4808-891f-216213467aef",
+      "id": "bbace64e-09b1-490f-92de-6672e3a6d9f4",
       "kwargs": {
         "column_A": "date_of_decision",
         "column_B": "date_of_filing",
@@ -49,7 +49,42 @@
       "type": "expect_column_pair_values_a_to_be_greater_than_b"
     },
     {
-      "id": "0b5c6f9f-cc54-471f-b43a-19fe61dc7668",
+      "id": "94e429cc-5ee0-4b4d-8bfa-5aeb765e1228",
+      "kwargs": {
+        "column": "date_of_filing",
+        "max_value": "2020-12-31T00:00:00",
+        "min_value": "2005-01-01T00:00:00",
+        "mostly": 0.999
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_between"
+    },
+    {
+      "id": "42423db4-bd11-449d-bba8-33610d1f3913",
+      "kwargs": {
+        "column": "date_of_decision",
+        "max_value": "2020-12-31T00:00:00",
+        "min_value": "2005-01-01T00:00:00",
+        "mostly": 0.999
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_between"
+    },
+    {
+      "id": "e9c85be4-a183-4a01-9dc4-387e348bf949",
+      "kwargs": {
+        "column": "days_to_disposition",
+        "min_value": 0.0,
+        "mostly": 0.998
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_between"
+    },
+    {
+      "id": "a18498fc-7856-4cd0-9826-59c99f45fa57",
       "kwargs": {
         "column": "female_defendant",
         "value_set": [
