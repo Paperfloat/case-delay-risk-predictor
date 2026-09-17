@@ -1,0 +1,73 @@
+{
+  "expectations": [
+    {
+      "id": "1cac1ad8-f734-495a-8060-1c0d0a670aad",
+      "kwargs": {
+        "column": "state_code"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "abb7b8b2-2eb2-4e77-9608-35e19247d088",
+      "kwargs": {
+        "column": "dist_code"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "00100602-3f30-43ec-8f49-560286414c3a",
+      "kwargs": {
+        "column": "type_name"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "e6a0c3cc-1441-4ae7-a848-4f0b429e6080",
+      "kwargs": {
+        "column": "date_of_filing"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "31d8608e-5f4e-4808-891f-216213467aef",
+      "kwargs": {
+        "column_A": "date_of_decision",
+        "column_B": "date_of_filing",
+        "mostly": 0.998,
+        "or_equal": true
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_pair_values_a_to_be_greater_than_b"
+    },
+    {
+      "id": "0b5c6f9f-cc54-471f-b43a-19fe61dc7668",
+      "kwargs": {
+        "column": "female_defendant",
+        "value_set": [
+          "0 male",
+          "1 female",
+          "-9998 unclear",
+          "-9999 missing name"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_in_set"
+    }
+  ],
+  "id": "a8c2772d-bb2c-421a-b271-f79d425c9c2a",
+  "meta": {
+    "great_expectations_version": "1.23.0"
+  },
+  "name": "cases_2012_delhi_suite",
+  "notes": null
+}
