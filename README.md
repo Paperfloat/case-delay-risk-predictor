@@ -9,3 +9,6 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
 - 29 rows excluded due to corrupted year values in date fields (e.g. "1204" instead of a plausible year)
 - 139 rows excluded due to negative days_to_disposition (decision recorded before filing)
 - purpose_name decoded via key file join; unmatched/corrupted values imputed as "unknown" post-decode
+- District names decoded using the 2010 district key mapping (state_code + dist_code only,
+  without year), since cases_district_key.csv has no entry for Delhi in 2012+. District
+  boundaries confirmed stable — all 11 dist_codes in the 2012 case data matched the 2010 key.

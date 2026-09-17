@@ -11,6 +11,18 @@ df = df.merge(type_key, on=['year', 'type_name'], how='left')
 df = df.merge(purpose_key, on=['year', 'purpose_name'], how='left')
 df = df.merge(disp_key, on=['year', 'disp_name'], how='left')
 
+# NOTE: cases_district_key.csv only has an entry for Delhi (state_code 26) in year 2010,
+# not 2012+. District boundaries are stable, so we reuse the 2010 mapping for all years
+# by joining on state_code + dist_code only (dropping year from this specific join).
+district_key = pd.read_csv('data/raw/keys/cases_district_key.csv', dtype=str)
+district_key = district_key[district_key['year'] == '2010'][['state_code', 'dist_code', 'district_name']]
+court_key = pd.read_csv('data/raw/keys/cases_court_key.csv', dtype=str)[['year', 'state_code', 'dist_code', 'court_no', 'court_name']]
+
+df = df.merge(district_key, on=['state_code', 'dist_code'], how='left')
+df = df.merge(court_key, on=['year', 'state_code', 'dist_code', 'court_no'], how='left')
+
+print("Unmatched district_name:", df['district_name'].isna().sum())
+print("Unmatched court_name:", df['court_name'].isna().sum())
 df['purpose_name_s'] = df['purpose_name_s'].fillna('unknown')
 
 print("Unmatched type_name:", df['type_name_s'].isna().sum())
