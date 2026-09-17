@@ -15,7 +15,13 @@ batch_def = asset.add_batch_definition_whole_dataframe('full_batch')
 batch = batch_def.get_batch(batch_parameters={'dataframe': df})
 
 suite = gx.ExpectationSuite(name='cases_2012_delhi_suite')
-
+# The 5000-01-01 sentinel should never appear as a literal parsed date value —
+# it must be excluded/handled before this stage, not silently present
+suite.add_expectation(gxe.ExpectColumnValuesToNotBeInSet(
+    column='date_last_list',
+    value_set=['5000-01-01'],
+    mostly=0.996
+))
 for col in ['state_code', 'dist_code', 'type_name', 'date_of_filing']:
     suite.add_expectation(gxe.ExpectColumnValuesToNotBeNull(column=col))
 

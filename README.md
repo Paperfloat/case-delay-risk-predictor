@@ -20,3 +20,7 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
 - Court tier derived from court_name's role prefix (5 tiers: District and Sessions
   Judge, Chief Metropolitan Magistrate, Senior Civil Judge cum RC, Principal Judge
   Family Court, POLC and POIT) — used for fairness subgroup monitoring per PRD.
+- multiple_hearings proxy: the 5000-01-01 placeholder in date_last_list (330 rows)
+  was initially causing all such rows to incorrectly show multiple_hearings=1.
+  Fixed by treating the placeholder as missing; these 330 rows now correctly
+  show multiple_hearings as unknown (NA) rather than a false positive.

@@ -87,11 +87,11 @@ fluent_datasources:
     assets:
       cases_2012_delhi:
         type: dataframe
-        id: 3a9a088f-e3a0-4fb8-b589-b9c6ac4b0ad5
+        id: c06f0b35-8d2f-40e1-a655-aae290ff00ea
         batch_metadata: {}
         batch_definitions:
           full_batch:
-            id: d1dd5290-7517-4e2d-9b15-f5c3833c7a0a
+            id: 0d6ed7fe-691d-48bf-9122-e97a6c91be47
             partitioner:
 analytics_enabled:
 data_context_id: 15fc5d15-2433-44e8-9567-26501c81279d

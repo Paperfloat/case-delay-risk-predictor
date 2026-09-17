@@ -1,7 +1,20 @@
 {
   "expectations": [
     {
-      "id": "9ac3cf74-793b-43c6-ade6-3719c029ff81",
+      "id": "f66c88af-6bb0-4c76-b1db-b66b14b46543",
+      "kwargs": {
+        "column": "date_last_list",
+        "mostly": 0.996,
+        "value_set": [
+          "5000-01-01"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_in_set"
+    },
+    {
+      "id": "0ff590a6-7101-498e-856a-0f26a9e1f209",
       "kwargs": {
         "column": "state_code"
       },
@@ -10,7 +23,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "79019869-ffd8-49bf-9e5d-c1a15f01ab57",
+      "id": "94ef4166-fbe4-48f2-ae48-0988cf94338f",
       "kwargs": {
         "column": "dist_code"
       },
@@ -19,7 +32,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "1e4fc6f3-5d88-481e-8089-28ff3e3092e4",
+      "id": "fa591605-1748-4e6b-9f0b-ebd51f66dffe",
       "kwargs": {
         "column": "type_name"
       },
@@ -28,7 +41,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "abbbc019-bc37-4990-8fff-a803349b048a",
+      "id": "3a021be4-0bac-46dd-8c52-125595295ec4",
       "kwargs": {
         "column": "date_of_filing"
       },
@@ -37,7 +50,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "bbace64e-09b1-490f-92de-6672e3a6d9f4",
+      "id": "f4cfff26-7f35-425b-a889-4629a06137a3",
       "kwargs": {
         "column_A": "date_of_decision",
         "column_B": "date_of_filing",
@@ -49,7 +62,7 @@
       "type": "expect_column_pair_values_a_to_be_greater_than_b"
     },
     {
-      "id": "94e429cc-5ee0-4b4d-8bfa-5aeb765e1228",
+      "id": "04e01bad-ff26-41d7-98db-96bdac5e06f9",
       "kwargs": {
         "column": "date_of_filing",
         "max_value": "2020-12-31T00:00:00",
@@ -61,7 +74,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "42423db4-bd11-449d-bba8-33610d1f3913",
+      "id": "60c2397c-e11a-4ff5-af16-c2d9122cf977",
       "kwargs": {
         "column": "date_of_decision",
         "max_value": "2020-12-31T00:00:00",
@@ -73,7 +86,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "e9c85be4-a183-4a01-9dc4-387e348bf949",
+      "id": "07320792-9725-40de-aea8-ff936343e6c9",
       "kwargs": {
         "column": "days_to_disposition",
         "min_value": 0.0,
@@ -84,7 +97,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "a18498fc-7856-4cd0-9826-59c99f45fa57",
+      "id": "e36b0417-d378-442e-bdb1-38d6c3f07df8",
       "kwargs": {
         "column": "female_defendant",
         "value_set": [

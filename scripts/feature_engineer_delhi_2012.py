@@ -47,8 +47,14 @@ print("NaT in date_of_filing:", df['date_of_filing'].isna().sum())
 print("NaT in date_of_decision:", df['date_of_decision'].isna().sum())
 
 # --- Derive hearing-activity proxy ---
-df['multiple_hearings'] = (df['date_first_list'] != df['date_last_list']).astype(int)
+# Treat the 5000-01-01 placeholder as missing, not a real date — it was
+# incorrectly making multiple_hearings=1 for all 330 affected rows
+df['date_last_list_clean'] = df['date_last_list'].where(df['date_last_list'] != '5000-01-01', pd.NA)
+df['multiple_hearings'] = (df['date_first_list'] != df['date_last_list_clean']).astype('Int64')
+df.loc[df['date_last_list_clean'].isna(), 'multiple_hearings'] = pd.NA
 
+print("multiple_hearings value counts (including unknown):")
+print(df['multiple_hearings'].value_counts(dropna=False))
 # --- Derive court tier from court_name (the role before the first comma) ---
 df['court_tier'] = df['court_name'].str.split(',').str[0].str.strip()
 print("Court tier value counts:")
