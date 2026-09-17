@@ -12,3 +12,11 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
 - District names decoded using the 2010 district key mapping (state_code + dist_code only,
   without year), since cases_district_key.csv has no entry for Delhi in 2012+. District
   boundaries confirmed stable — all 11 dist_codes in the 2012 case data matched the 2010 key.
+- Case-type taxonomy: normalized 114 raw categories to 96 by stripping punctuation/
+  whitespace and merging one known duplicate (mact/m a c t). Some plural/singular
+  variants (e.g. "cr case" vs "cr cases") likely remain as separate categories —
+  acceptable for v1, revisit if model performance suggests case-type signal is
+  fragmented across near-duplicate labels.
+- Court tier derived from court_name's role prefix (5 tiers: District and Sessions
+  Judge, Chief Metropolitan Magistrate, Senior Civil Judge cum RC, Principal Judge
+  Family Court, POLC and POIT) — used for fairness subgroup monitoring per PRD.

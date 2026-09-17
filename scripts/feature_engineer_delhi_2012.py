@@ -49,6 +49,27 @@ print("NaT in date_of_decision:", df['date_of_decision'].isna().sum())
 # --- Derive hearing-activity proxy ---
 df['multiple_hearings'] = (df['date_first_list'] != df['date_last_list']).astype(int)
 
+# --- Derive court tier from court_name (the role before the first comma) ---
+df['court_tier'] = df['court_name'].str.split(',').str[0].str.strip()
+print("Court tier value counts:")
+print(df['court_tier'].value_counts())
+
+# --- Normalize case-type taxonomy: strip punctuation and collapse whitespace ---
+df['type_name_normalized'] = (
+    df['type_name_s']
+    .str.replace('.', '', regex=False)
+    .str.replace(r'\s+', ' ', regex=True)
+    .str.strip()
+)
+
+# Known specific duplicates not caught by punctuation stripping alone
+manual_merges = {'m a c t': 'mact'}
+df['type_name_normalized'] = df['type_name_normalized'].replace(manual_merges)
+print("Unique type_name_normalized (after manual merges):", df['type_name_normalized'].nunique())
+print("Unique type_name_s (raw):", df['type_name_s'].nunique())
+print("Unique type_name_normalized (cleaned):", df['type_name_normalized'].nunique())
+print(df['type_name_normalized'].value_counts().head(30))
+
 df.to_csv('data/processed/cases_2012_delhi_features.csv', index=False)
 print(df.shape)
 print(df['days_to_disposition'].describe())
