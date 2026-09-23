@@ -62,3 +62,28 @@ importances = pd.Series(model.feature_importances_, index=X_train.columns)
 top_features = importances.sort_values(ascending=False).head(20)
 print("\nTop 20 most important features:")
 print(top_features)
+
+# --- Subgroup fairness check: MAE by district, court tier, case type ---
+test_df = X_test.copy()
+test_df['actual'] = y_test.values
+test_df['predicted'] = y_pred
+test_df['abs_error'] = abs(test_df['actual'] - test_df['predicted'])
+
+# Reconstruct original categorical columns for grouping (one-hot columns → back to category)
+orig_test = df.loc[X_test.index, ['district_name', 'court_tier', 'female_defendant']]
+test_df = test_df.join(orig_test)
+
+print("\n--- MAE by district ---")
+print(test_df.groupby('district_name')['abs_error'].agg(['mean', 'count']))
+
+print("\n--- MAE by court tier ---")
+print(test_df.groupby('court_tier')['abs_error'].agg(['mean', 'count']))
+
+print("\n--- MAE by female_defendant ---")
+print(test_df.groupby('female_defendant')['abs_error'].agg(['mean', 'count']))
+
+# Correlation between subgroup size and error
+district_stats = test_df.groupby('district_name')['abs_error'].agg(['mean', 'count'])
+print("\n--- Correlation (District Count vs Mean Error) ---")
+print(district_stats.corr())
+

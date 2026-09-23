@@ -31,3 +31,18 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
   (allowed, withdrawn, compromised at first hearing) never accumulate one.
   Kept as a legitimate feature rather than excluded, since it reflects a real
   procedural pattern, not a data artifact.
+
+## Fairness Findings (v1 baseline model)
+- District: MAE ranges from 307 days (North East) to 535 days (Shahdara) — a ~74%
+  relative gap. Correlation between district sample size and MAE is -0.37 (moderate),
+  meaning sample-size imbalance partially but not fully explains this — some districts
+  are genuinely harder to predict, not just underrepresented.
+- Court tier: MAE ranges from ~323 days (Family Court, Sessions Judge) to ~454 days
+  (POLC/POIT, Chief Metropolitan Magistrate) — a ~40% relative gap.
+- Gender (female_defendant): modest gap (347 days female vs. 393 days male) — smaller
+  than district/court-tier disparities. The "-9999 missing name" subgroup has only 5
+  test rows and should not be treated as a meaningful estimate.
+- Conclusion: real, moderate reliability disparities exist across districts and court
+  tiers. Not disqualifying for v1, but flagged as a monitoring priority — a case from
+  Shahdara or a POLC/POIT court currently gets a meaningfully less reliable delay
+  prediction than one from North East or a Family Court.
