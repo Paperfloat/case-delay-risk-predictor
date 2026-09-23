@@ -12,3 +12,5 @@ data/raw/keys/section_key.csv
 data/raw/cases/cases_*.csv
 data/raw/csv.zip
 
+mlflow.db
+mlruns/
