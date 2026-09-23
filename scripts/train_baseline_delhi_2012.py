@@ -56,3 +56,9 @@ with mlflow.start_run(run_name="baseline_filing_time_only"):
     naive_mae = mean_absolute_error(y_test, naive_pred)
     mlflow.log_metric("naive_baseline_mae", naive_mae)
     print(f"Naive baseline MAE (always predict median): {naive_mae:.2f} days")
+
+# Feature importance — which categories matter most
+importances = pd.Series(model.feature_importances_, index=X_train.columns)
+top_features = importances.sort_values(ascending=False).head(20)
+print("\nTop 20 most important features:")
+print(top_features)

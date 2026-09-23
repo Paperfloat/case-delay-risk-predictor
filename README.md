@@ -24,3 +24,10 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
   was initially causing all such rows to incorrectly show multiple_hearings=1.
   Fixed by treating the placeholder as missing; these 330 rows now correctly
   show multiple_hearings as unknown (NA) rather than a false positive.
+- Model finding: purpose_name="unknown" (~2% of rows) strongly correlates with
+  near-immediate case resolution (median 1 day vs. 388 days for cases with a
+  recorded purpose). Likely explanation: purpose_name is only populated when a
+  case requires a scheduled follow-up hearing — cases resolved immediately
+  (allowed, withdrawn, compromised at first hearing) never accumulate one.
+  Kept as a legitimate feature rather than excluded, since it reflects a real
+  procedural pattern, not a data artifact.
