@@ -46,3 +46,19 @@ A resource-planning tool that flags cases at risk of indefinite delay, built on 
   tiers. Not disqualifying for v1, but flagged as a monitoring priority — a case from
   Shahdara or a POLC/POIT court currently gets a meaningfully less reliable delay
   prediction than one from North East or a Family Court.
+
+## Example: Per-Case Explanation
+Case 26-09-02-202100620012016 (Chief Metropolitan Magistrate, West district,
+type "cr case", purpose "order"): actual duration 1,341 days, predicted 2,077
+days. Model correctly identified this as a high-delay-risk case (1,341 days is
+well above the 373-day median) but overestimated the magnitude by ~55% — an
+expected outcome given R²=0.43, illustrating that the model has real directional
+signal but substantial residual uncertainty in exact day counts. This supports
+the plan to reframe as risk-tier classification rather than precise day
+prediction for the eventual product.
+
+Note: SHAP values exist for every one-hot encoded column, not just the "active"
+category for a given row — only the column matching the case's actual attribute
+(e.g. district_name_West=1) reflects that case's own contribution; other
+category columns show the model's learned baseline shift from not being in
+that category, not signal from this case.

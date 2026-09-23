@@ -87,3 +87,27 @@ district_stats = test_df.groupby('district_name')['abs_error'].agg(['mean', 'cou
 print("\n--- Correlation (District Count vs Mean Error) ---")
 print(district_stats.corr())
 
+import shap
+
+print("\nComputing SHAP values...")
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# Global importance: mean absolute SHAP value per feature
+shap_importance = pd.Series(abs(shap_values).mean(axis=0), index=X_test.columns)
+print("\nTop 15 features by mean |SHAP value|:")
+print(shap_importance.sort_values(ascending=False).head(15))
+
+# --- Per-case explanation: show why one specific high-risk case was flagged ---
+highest_risk_idx = pd.Series(y_pred, index=X_test.index).idxmax()
+case_position = X_test.index.get_loc(highest_risk_idx)
+
+case_info = df.loc[highest_risk_idx, ['ddl_case_id', 'type_name_normalized', 'purpose_name_s', 'court_tier', 'district_name', 'days_to_disposition']]
+print("\n--- Example: highest predicted-risk case in test set ---")
+print(case_info)
+print(f"Predicted days_to_disposition: {y_pred[case_position]:.0f}")
+
+case_shap = pd.Series(shap_values[case_position], index=X_test.columns)
+top_contributors = case_shap.reindex(case_shap.abs().sort_values(ascending=False).index).head(10)
+print("\nTop 10 SHAP contributors for this specific case (positive = pushes delay higher):")
+print(top_contributors)
