@@ -24,7 +24,14 @@ suite.add_expectation(gxe.ExpectColumnValuesToNotBeInSet(
 ))
 for col in ['state_code', 'dist_code', 'type_name', 'date_of_filing']:
     suite.add_expectation(gxe.ExpectColumnValuesToNotBeNull(column=col))
-
+# --- Schema drift checks (distinct from value checks above) ---
+suite.add_expectation(gxe.ExpectTableColumnsToMatchSet(
+    column_set=list(df.columns),
+    exact_match=True
+))
+suite.add_expectation(gxe.ExpectTableColumnCountToEqual(
+    value=len(df.columns)
+))
 suite.add_expectation(gxe.ExpectColumnPairValuesAToBeGreaterThanB(
     column_A='date_of_decision', column_B='date_of_filing', or_equal=True, mostly=0.998
 ))
