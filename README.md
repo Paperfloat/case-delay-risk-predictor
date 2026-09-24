@@ -89,3 +89,93 @@ access. Before this CI workflow can actually run, it needs a cloud-reachable
 DVC remote (e.g. a free-tier S3/GCS bucket or DVC's own hosted storage) and a
 dvc pull step added to the workflow. Deferred to Week 4 (CI/CD is explicit
 Week 4 PRD scope) rather than fixed now.
+
+Rows with valid target: 413855
+New thresholds — Low <= 186, Medium <= 700, High > 700
+Feature matrix shape: (413855, 173)
+
+Macro F1 Score: 0.5931
+              precision    recall  f1-score   support
+
+         Low       0.63      0.72      0.67     27326
+      Medium       0.54      0.38      0.45     27308
+        High       0.62      0.70      0.66     28137
+
+    accuracy                           0.60     82771
+   macro avg       0.60      0.60      0.59     82771
+weighted avg       0.60      0.60      0.59     82771
+
+
+=== Subgroup Fairness Report: type_name_normalized ===
+[arbtn] (n=4753): Macro F1 = 0.4063
+[ca] (n=1541): Macro F1 = 0.3494
+[civ dj] (n=1164): Macro F1 = 0.4444
+[civ suit] (n=3612): Macro F1 = 0.5069
+[cr case] (n=2187): Macro F1 = 0.3358
+[cr cases] (n=3812): Macro F1 = 0.4126
+[cr criminal revision] (n=718): Macro F1 = 0.3392
+[cr rev] (n=2175): Macro F1 = 0.3396
+[cs] (n=3059): Macro F1 = 0.4355
+[cs dj] (n=3703): Macro F1 = 0.4393
+[cs dj adj] (n=1130): Macro F1 = 0.4935
+[cs scj] (n=5452): Macro F1 = 0.4608
+[ct cases] (n=16350): Macro F1 = 0.5136
+[e x] (n=67): Macro F1 = 0.2569
+[ex] (n=5531): Macro F1 = 0.3719
+[ex civil] (n=359): Macro F1 = 0.3313
+[ex crl] (n=333): Macro F1 = 0.3795
+[gp] (n=328): Macro F1 = 0.5597
+[hindu adp] (n=142): Macro F1 = 0.6510
+[hma] (n=5318): Macro F1 = 0.5064
+[l i d] (n=539): Macro F1 = 0.4284
+[l i r] (n=3383): Macro F1 = 0.4420
+[lac] (n=300): Macro F1 = 0.3317
+[lc] (n=485): Macro F1 = 0.4583
+[lca] (n=415): Macro F1 = 0.4443
+[m] (n=198): Macro F1 = 0.3537
+[mact] (n=3700): Macro F1 = 0.5075
+[mc] (n=193): Macro F1 = 0.4863
+[mca dj] (n=267): Macro F1 = 0.4386
+[mca scj] (n=181): Macro F1 = 0.4260
+[misc crl] (n=501): Macro F1 = 0.4927
+[misc dj] (n=1657): Macro F1 = 0.3437
+[misc scj] (n=1034): Macro F1 = 0.4517
+[mt case] (n=913): Macro F1 = 0.4634
+[pc] (n=290): Macro F1 = 0.3786
+[poit] (n=303): Macro F1 = 0.6053
+[ppa] (n=171): Macro F1 = 0.3964
+[rc arc] (n=972): Macro F1 = 0.4182
+[rca civil dj adj] (n=50): Macro F1 = 0.3575
+[rca dj] (n=931): Macro F1 = 0.4346
+[rca scj] (n=92): Macro F1 = 0.3997
+[rct arct] (n=276): Macro F1 = 0.4354
+[sc] (n=2186): Macro F1 = 0.3091
+[succ court] (n=605): Macro F1 = 0.4199
+[succession court] (n=54): Macro F1 = 0.4656
+[tm] (n=122): Macro F1 = 0.4476
+[tp c] (n=201): Macro F1 = 0.4859
+[tp crl] (n=253): Macro F1 = 0.4950
+Max F1 Disparity Gap for type_name_normalized: 39.41%
+
+=== Subgroup Fairness Report: court_tier ===
+[Chief Metropolitan Magistrate] (n=21850): Macro F1 = 0.5738
+[District and Sessions Judge] (n=34959): Macro F1 = 0.5283
+[POLC and POIT] (n=4610): Macro F1 = 0.5397
+[Principal Judge Family Court] (n=5090): Macro F1 = 0.5470
+[Senior Civil Judge cum RC] (n=16262): Macro F1 = 0.4996
+Max F1 Disparity Gap for court_tier: 7.42%
+
+=== Subgroup Fairness Report: district_name ===
+[Central] (n=14669): Macro F1 = 0.5628
+[East] (n=5726): Macro F1 = 0.4685
+[New Delhi] (n=4595): Macro F1 = 0.5565
+[North] (n=5852): Macro F1 = 0.5562
+[North East] (n=7639): Macro F1 = 0.5643
+[North West] (n=8375): Macro F1 = 0.5606
+[Shahdara] (n=3639): Macro F1 = 0.4563
+[South] (n=5685): Macro F1 = 0.5611
+[South East] (n=5521): Macro F1 = 0.5096
+[South West] (n=12695): Macro F1 = 0.5750
+[West] (n=8375): Macro F1 = 0.5430
+Max F1 Disparity Gap for district_name: 11.87%
+2026/09/24 10:24:37 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
