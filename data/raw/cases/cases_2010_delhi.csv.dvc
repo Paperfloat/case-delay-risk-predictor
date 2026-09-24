@@ -1,0 +1,5 @@
+outs:
+- md5: 3a7464dbba6c0aa92c8b924e46192b1c
+  size: 17160533
+  hash: md5
+  path: cases_2010_delhi.csv
