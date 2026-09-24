@@ -47,3 +47,10 @@ suite.add_expectation(gxe.ExpectColumnValuesToBeInSet(
 context.suites.add_or_update(suite)
 result = batch.validate(suite)
 print(result)
+
+import sys
+if not result.success:
+    print("\n❌ Data validation failed!")
+    sys.exit(1)
+print("\n✅ Data validation passed successfully!")
+sys.exit(0)
