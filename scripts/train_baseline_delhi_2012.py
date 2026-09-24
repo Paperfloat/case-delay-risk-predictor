@@ -1,113 +1,120 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
-
-df = pd.read_csv('data/processed/cases_2012_delhi_features.csv')
-
-# Drop rows with no valid target (corrupted dates, negative durations already NA)
-df = df[df['days_to_disposition'].notna()].copy()
-print("Rows with valid target:", df.shape[0])
-
-# Filing-time-only feature set — no leakage
-feature_cols = ['type_name_normalized', 'purpose_name_s', 'court_tier', 'district_name', 'female_defendant', 'female_petitioner']
-target_col = 'days_to_disposition'
-
-X = df[feature_cols].copy()
-y = df[target_col].copy()
-
-# One-hot encode all categorical features
-X = pd.get_dummies(X, columns=feature_cols)
-print("Feature matrix shape after encoding:", X.shape)
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-print("Train shape:", X_train.shape, "Test shape:", X_test.shape)
-
-import xgboost as xgb
 import mlflow
 import mlflow.xgboost
-from sklearn.metrics import mean_absolute_error, r2_score
+import numpy as np
+import pandas as pd
+from sklearn.metrics import classification_report, f1_score, precision_recall_fscore_support
+from sklearn.model_selection import train_test_split
+import xgboost as xgb
 
+# 1. Load data
+df = pd.read_csv("data/processed/cases_2012_delhi_features.csv")
+df = df[df["days_to_disposition"].notna()].copy()
+
+
+# 2. Define target classes using quantile thresholds
+def assign_risk_tier(days):
+    if days <= 175:
+        return 0  # Low Risk
+    elif days <= 742:
+        return 1  # Medium Risk
+    else:
+        return 2  # High Risk
+
+
+df["risk_tier"] = df["days_to_disposition"].apply(assign_risk_tier)
+
+# 3. Features and Target
+feature_cols = [
+    "type_name_normalized",
+    "purpose_name_s",
+    "court_tier",
+    "district_name",
+    "female_defendant",
+    "female_petitioner",
+]
+X_raw = df[feature_cols].copy()
+y = df["risk_tier"].copy()
+
+# One-hot encode categoricals
+X = pd.get_dummies(X_raw, columns=feature_cols)
+
+# Train/Test Split (stratified on risk_tier)
+X_train, X_test, y_train, y_test, raw_train, raw_test = train_test_split(
+    X, y, X_raw, test_size=0.2, random_state=42, stratify=y
+)
+
+# 4. Train XGBClassifier
 mlflow.set_experiment("case-delay-risk-predictor")
 
-with mlflow.start_run(run_name="baseline_filing_time_only"):
+with mlflow.start_run(run_name="xgboost_risk_tier_classifier"):
     params = {
-        'n_estimators': 100,
-        'max_depth': 5,
-        'learning_rate': 0.1,
-        'random_state': 42
+        "n_estimators": 100,
+        "max_depth": 5,
+        "learning_rate": 0.1,
+        "eval_metric": "mlogloss",
+        "random_state": 42,
     }
     mlflow.log_params(params)
 
-    model = xgb.XGBRegressor(**params)
+    model = xgb.XGBClassifier(**params)
     model.fit(X_train, y_train)
 
+    # Predictions
     y_pred = model.predict(X_test)
-    mae = mean_absolute_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
 
-    mlflow.log_metric("mae", mae)
-    mlflow.log_metric("r2", r2)
+    # Core Classification Metrics
+    macro_f1 = f1_score(y_test, y_pred, average="macro")
+    print(f"\n--- Overall Metrics ---")
+    print(f"Macro F1 Score: {macro_f1:.4f}")
+    mlflow.log_metric("macro_f1", macro_f1)
+
+    print("\nClassification Report:")
+    print(
+        classification_report(
+            y_test, y_pred, target_names=["Low", "Medium", "High"]
+        )
+    )
+
+    # 5. PRD 3D Fairness Audit (Case Type, Court Tier, Region/District)
+    test_eval = raw_test.copy()
+    test_eval["y_true"] = y_test
+    test_eval["y_pred"] = y_pred
+
+    def eval_subgroup_fairness(df_sub, group_col):
+        print(f"\n=== Subgroup Fairness Report: {group_col} ===")
+        f1_scores = []
+        for val, group in df_sub.groupby(group_col):
+            if len(group) < 50:  # Skip tiny subgroups
+                continue
+            sub_f1 = f1_score(
+                group["y_true"], group["y_pred"], average="macro"
+            )
+            f1_scores.append(sub_f1)
+            print(f"Subgroup [{val}] (n={len(group)}): Macro F1 = {sub_f1:.4f}")
+
+        if f1_scores:
+            max_gap = max(f1_scores) - min(f1_scores)
+            print(f"Max F1 Disparity Gap for {group_col}: {max_gap * 100:.2f}%")
+            mlflow.log_metric(f"fairness_f1_gap_{group_col}", max_gap)
+
+    # Run checks across all 3 PRD dimensions
+    for col in ["type_name_normalized", "court_tier", "district_name"]:
+        eval_subgroup_fairness(test_eval, col)
+
     mlflow.xgboost.log_model(model, "model")
+    print("\nClassifier run successfully logged to MLflow!")
 
-    print(f"MAE: {mae:.2f} days")
-    print(f"R2: {r2:.4f}")
+    subgroup_data = []
+for val, group in test_eval.groupby('type_name_normalized'):
+    if len(group) < 50:
+        continue
+    sub_f1 = f1_score(group['y_true'], group['y_pred'], average='macro')
+    subgroup_data.append({'type': val, 'n': len(group), 'f1': sub_f1})
 
-    # Naive baseline for comparison: always predict the median
-    naive_pred = [y_train.median()] * len(y_test)
-    naive_mae = mean_absolute_error(y_test, naive_pred)
-    mlflow.log_metric("naive_baseline_mae", naive_mae)
-    print(f"Naive baseline MAE (always predict median): {naive_mae:.2f} days")
-
-# Feature importance — which categories matter most
-importances = pd.Series(model.feature_importances_, index=X_train.columns)
-top_features = importances.sort_values(ascending=False).head(20)
-print("\nTop 20 most important features:")
-print(top_features)
-
-# --- Subgroup fairness check: MAE by district, court tier, case type ---
-test_df = X_test.copy()
-test_df['actual'] = y_test.values
-test_df['predicted'] = y_pred
-test_df['abs_error'] = abs(test_df['actual'] - test_df['predicted'])
-
-# Reconstruct original categorical columns for grouping (one-hot columns → back to category)
-orig_test = df.loc[X_test.index, ['district_name', 'court_tier', 'female_defendant']]
-test_df = test_df.join(orig_test)
-
-print("\n--- MAE by district ---")
-print(test_df.groupby('district_name')['abs_error'].agg(['mean', 'count']))
-
-print("\n--- MAE by court tier ---")
-print(test_df.groupby('court_tier')['abs_error'].agg(['mean', 'count']))
-
-print("\n--- MAE by female_defendant ---")
-print(test_df.groupby('female_defendant')['abs_error'].agg(['mean', 'count']))
-
-# Correlation between subgroup size and error
-district_stats = test_df.groupby('district_name')['abs_error'].agg(['mean', 'count'])
-print("\n--- Correlation (District Count vs Mean Error) ---")
-print(district_stats.corr())
-
-import shap
-
-print("\nComputing SHAP values...")
-explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(X_test)
-
-# Global importance: mean absolute SHAP value per feature
-shap_importance = pd.Series(abs(shap_values).mean(axis=0), index=X_test.columns)
-print("\nTop 15 features by mean |SHAP value|:")
-print(shap_importance.sort_values(ascending=False).head(15))
-
-# --- Per-case explanation: show why one specific high-risk case was flagged ---
-highest_risk_idx = pd.Series(y_pred, index=X_test.index).idxmax()
-case_position = X_test.index.get_loc(highest_risk_idx)
-
-case_info = df.loc[highest_risk_idx, ['ddl_case_id', 'type_name_normalized', 'purpose_name_s', 'court_tier', 'district_name', 'days_to_disposition']]
-print("\n--- Example: highest predicted-risk case in test set ---")
-print(case_info)
-print(f"Predicted days_to_disposition: {y_pred[case_position]:.0f}")
-
-case_shap = pd.Series(shap_values[case_position], index=X_test.columns)
-top_contributors = case_shap.reindex(case_shap.abs().sort_values(ascending=False).index).head(10)
-print("\nTop 10 SHAP contributors for this specific case (positive = pushes delay higher):")
-print(top_contributors)
+subgroup_df = pd.DataFrame(subgroup_data)
+print("\nCorrelation between subgroup size and F1:")
+print(subgroup_df[['n', 'f1']].corr())
+print("\nSmallest subgroups (most likely noisy):")
+print(subgroup_df.sort_values('n').head(10))
+print(df[df['type_name_normalized'] == 'lac']['days_to_disposition'].describe())
+print(df[df['type_name_normalized'] == 'lac']['risk_tier'].value_counts() if 'risk_tier' in df.columns else 'risk_tier not in df')

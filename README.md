@@ -62,3 +62,22 @@ category for a given row — only the column matching the case's actual attribut
 (e.g. district_name_West=1) reflects that case's own contribution; other
 category columns show the model's learned baseline shift from not being in
 that category, not signal from this case.
+
+## Week 3 Model Results (v1 Classifier)
+- Macro F1: 0.598 — below PRD target of ≥0.75
+- Case-type F1 disparity: 73.68% — far exceeds PRD target of <10%.
+  Confirmed NOT a sample-size artifact (correlation between subgroup
+  size and F1 ≈ -0.02) — this is a genuine, substantial fairness gap.
+- Court tier disparity: 13.56%, district disparity: 13.14% — both
+  modestly exceed the 10% target.
+- Conclusion: v1 classifier, trained on only 6 filing-time categorical
+  features from a single state-year, does not yet meet PRD success
+  criteria. This is an expected, honest v1 result given the limited
+  feature set and single year of data — not a bug. Next steps to close
+  the gap: expand training data to Delhi 2010-2013 (previously planned),
+  investigate whether additional filing-time features exist, and
+  consider per-case-type calibration given the demonstrated disparity.
+  - Case type "lac" shows an outlier F1 of 0.947, but this is a class-imbalance
+  artifact, not genuine model skill: 94% of "lac" cases (808/858) fall in the
+  High risk tier (median 1,876 days), so a trivial always-predict-High rule
+  would score similarly. Excluded from the "genuine disparity" interpretation.
