@@ -1,7 +1,7 @@
 {
   "expectations": [
     {
-      "id": "f66c88af-6bb0-4c76-b1db-b66b14b46543",
+      "id": "39405251-42db-4e0c-a5f5-d5c25b578176",
       "kwargs": {
         "column": "date_last_list",
         "mostly": 0.996,
@@ -14,7 +14,7 @@
       "type": "expect_column_values_to_not_be_in_set"
     },
     {
-      "id": "0ff590a6-7101-498e-856a-0f26a9e1f209",
+      "id": "48745721-9869-418d-8ece-09c860ec75af",
       "kwargs": {
         "column": "state_code"
       },
@@ -23,7 +23,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "94ef4166-fbe4-48f2-ae48-0988cf94338f",
+      "id": "697a3d79-382e-41da-8e40-5be8cee0fafb",
       "kwargs": {
         "column": "dist_code"
       },
@@ -32,7 +32,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "fa591605-1748-4e6b-9f0b-ebd51f66dffe",
+      "id": "8cd9f2a1-49ed-4058-8b83-bc1f92afa405",
       "kwargs": {
         "column": "type_name"
       },
@@ -41,7 +41,7 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "3a021be4-0bac-46dd-8c52-125595295ec4",
+      "id": "e57d2596-178a-4026-96ff-45e787f278b7",
       "kwargs": {
         "column": "date_of_filing"
       },
@@ -50,7 +50,55 @@
       "type": "expect_column_values_to_not_be_null"
     },
     {
-      "id": "f4cfff26-7f35-425b-a889-4629a06137a3",
+      "id": "cfa5ab1a-41bf-42c4-864e-e8a29c7179e6",
+      "kwargs": {
+        "column_set": [
+          "ddl_case_id",
+          "year",
+          "state_code",
+          "dist_code",
+          "court_no",
+          "cino",
+          "judge_position",
+          "female_defendant",
+          "female_petitioner",
+          "female_adv_def",
+          "female_adv_pet",
+          "type_name",
+          "purpose_name",
+          "disp_name",
+          "date_of_filing",
+          "date_of_decision",
+          "date_first_list",
+          "date_last_list",
+          "date_next_list",
+          "type_name_s",
+          "purpose_name_s",
+          "disp_name_s",
+          "district_name",
+          "court_name",
+          "days_to_disposition",
+          "date_last_list_clean",
+          "multiple_hearings",
+          "court_tier",
+          "type_name_normalized"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_table_columns_to_match_set"
+    },
+    {
+      "id": "2b1188fe-1ec5-4f03-a382-8e505839a8da",
+      "kwargs": {
+        "value": 29
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_table_column_count_to_equal"
+    },
+    {
+      "id": "7eb9efe5-e8ab-4b2a-98c0-fd31936f016f",
       "kwargs": {
         "column_A": "date_of_decision",
         "column_B": "date_of_filing",
@@ -62,7 +110,7 @@
       "type": "expect_column_pair_values_a_to_be_greater_than_b"
     },
     {
-      "id": "04e01bad-ff26-41d7-98db-96bdac5e06f9",
+      "id": "e13ab69c-110f-4953-bf70-4ff21c8b14a2",
       "kwargs": {
         "column": "date_of_filing",
         "max_value": "2020-12-31T00:00:00",
@@ -74,7 +122,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "60c2397c-e11a-4ff5-af16-c2d9122cf977",
+      "id": "db6caa0e-fc8a-4666-9d2b-6526ff9ed23f",
       "kwargs": {
         "column": "date_of_decision",
         "max_value": "2020-12-31T00:00:00",
@@ -86,7 +134,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "07320792-9725-40de-aea8-ff936343e6c9",
+      "id": "ed391793-4879-4b6d-81bb-f0c7263084df",
       "kwargs": {
         "column": "days_to_disposition",
         "min_value": 0.0,
@@ -97,7 +145,7 @@
       "type": "expect_column_values_to_be_between"
     },
     {
-      "id": "e36b0417-d378-442e-bdb1-38d6c3f07df8",
+      "id": "97119ba5-75d0-4d8f-85c4-29b037bf409a",
       "kwargs": {
         "column": "female_defendant",
         "value_set": [
