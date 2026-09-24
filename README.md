@@ -81,3 +81,11 @@ that category, not signal from this case.
   artifact, not genuine model skill: 94% of "lac" cases (808/858) fall in the
   High risk tier (median 1,876 days), so a trivial always-predict-High rule
   would score similarly. Excluded from the "genuine disparity" interpretation.
+
+  ## Known Gap: CI Workflow Needs Cloud DVC Remote
+.github/workflows/data_validation.yml currently references data via the local
+DVC remote (/home/srish/dvc-storage/...), which GitHub Actions' runners cannot
+access. Before this CI workflow can actually run, it needs a cloud-reachable
+DVC remote (e.g. a free-tier S3/GCS bucket or DVC's own hosted storage) and a
+dvc pull step added to the workflow. Deferred to Week 4 (CI/CD is explicit
+Week 4 PRD scope) rather than fixed now.

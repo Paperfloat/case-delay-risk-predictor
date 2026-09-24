@@ -1,0 +1,29 @@
+name: Data & Schema Validation CI
+
+on:
+  push:
+    branches: [ main, model-training ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Great Expectations Validation
+        run: |
+          python3 validation/validate_delhi_2012.py
