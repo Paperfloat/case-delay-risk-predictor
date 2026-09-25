@@ -1,4 +1,6 @@
 [core]
-    remote = localremote
+    remote = origin
 ['remote "localremote"']
     url = /home/srish/dvc-storage/case-delay-risk
+['remote "origin"']
+    url = https://dagshub.com/Paperfloat/case-delay-risk-predictor.dvc
