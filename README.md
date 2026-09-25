@@ -179,3 +179,22 @@ Max F1 Disparity Gap for court_tier: 7.42%
 [West] (n=8375): Macro F1 = 0.5430
 Max F1 Disparity Gap for district_name: 11.87%
 2026/09/24 10:24:37 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
+
+## Week 3.2: Feature Addition Experiment (filing_month)
+Added filing_month (from date_of_filing, genuinely available at filing time,
+no leakage) to test whether seasonality carries signal.
+
+Results: Macro F1 0.593 -> 0.593 (no change). Case-type gap 39.41% -> 35.63%
+(marginal). Court tier gap 7.42% -> 7.70% (flat, still under target).
+District gap 11.87% -> 13.13% (slightly worse).
+
+Conclusion: two independent attempts to close the Macro F1 gap — 4x more
+training data (Week 3.1) and a new filing-time feature (this experiment) —
+both failed to move overall performance meaningfully. This is strong,
+repeated evidence that the ceiling on this task, given only filing-time
+categorical signal (case type, purpose, court, district, gender, month),
+is around Macro F1 ~0.59, not the PRD's 0.75 target. Reaching 0.75 likely
+requires either features with genuine leakage risk (early case-progress
+signal, deliberately excluded in v1 for correctness) or a different
+modeling approach (survival analysis, per-case-type threshold calibration).
+Documented as the v1 conclusion; not pursued further this session.
