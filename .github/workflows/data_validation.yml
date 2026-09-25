@@ -31,7 +31,7 @@ jobs:
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Pull data from DVC remote
-        run: dvc pull
+        run: dvc pull --force
 
       - name: Run Great Expectations Validation
         run: |
