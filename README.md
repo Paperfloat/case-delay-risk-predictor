@@ -198,3 +198,26 @@ requires either features with genuine leakage risk (early case-progress
 signal, deliberately excluded in v1 for correctness) or a different
 modeling approach (survival analysis, per-case-type threshold calibration).
 Documented as the v1 conclusion; not pursued further this session.
+## Week 5: Drift Monitoring (Evidently AI)
+Simulated a time-sliced drift check using the same 3 fields tracked for
+fairness (case type, court tier, district) — reference period: 2010-2011
+(183,296 rows), current period: 2012-2013 (231,296 rows).
+
+Results (PSI, threshold 0.1):
+- type_name_normalized: 0.110 — DRIFT DETECTED
+- court_tier: 0.031 — stable
+- district_name: 0.039 — stable
+
+Retrain trigger: fired, correctly isolating case-type distribution as the
+source of drift.
+
+This result directly validates a decision already made earlier in this
+project: expanding training data from Delhi-2012-only to Delhi 2010-2013
+(documented in Week 3.1) was the right call, not just a Macro F1
+experiment — a model trained only on 2010-2011 case-type distributions
+would have been measurably stale against 2012-2013 data, exactly the kind
+of drift this monitor is designed to catch. The retrain that already
+happened this session is what a real production system would have done
+automatically in response to this exact trigger.
+
+Full interactive report: monitoring/drift_report.html
