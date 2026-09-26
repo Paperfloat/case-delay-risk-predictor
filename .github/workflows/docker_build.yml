@@ -31,7 +31,7 @@ jobs:
           curl -f -X POST http://localhost:8000/predict \
             -H "Content-Type: application/json" \
             -d '{"type_name_normalized": "hma", "purpose_name_s": "misc", "court_tier": "Principal Judge Family Court", "district_name": "South West", "female_defendant": "0 male", "female_petitioner": "1 female"}'
-- name: Verify audit log write
+      - name: Verify audit log write
         run: |
           docker exec api-test python3 -c "
           import sqlite3
