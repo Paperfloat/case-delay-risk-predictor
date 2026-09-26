@@ -31,8 +31,20 @@ jobs:
           curl -f -X POST http://localhost:8000/predict \
             -H "Content-Type: application/json" \
             -d '{"type_name_normalized": "hma", "purpose_name_s": "misc", "court_tier": "Principal Judge Family Court", "district_name": "South West", "female_defendant": "0 male", "female_petitioner": "1 female"}'
+- name: Verify audit log write
+        run: |
+          docker exec api-test python3 -c "
+          import sqlite3
+          conn = sqlite3.connect('audit_log.db')
+          count = conn.execute('SELECT COUNT(*) FROM predictions').fetchone()[0]
+          print(f'Rows in predictions table: {count}')
+          assert count >= 1, 'No prediction was logged to audit_log.db!'
+          conn.close()
+          "
 
       - name: Stop container
         if: always()
         run: docker stop api-test
+
+
 
