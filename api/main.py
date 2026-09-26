@@ -4,6 +4,8 @@ import pandas as pd
 import shap
 from fastapi import FastAPI
 from pydantic import BaseModel
+import sqlite3
+from datetime import datetime, timezone
 
 app = FastAPI(title="Case Delay Risk Predictor")
 
@@ -14,6 +16,28 @@ with open("models/thresholds.json") as f:
     THRESHOLDS = json.load(f)
 
 explainer = shap.TreeExplainer(model)
+
+DB_PATH = "audit_log.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS predictions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            model_version TEXT NOT NULL,
+            input_json TEXT NOT NULL,
+            risk_tier TEXT NOT NULL,
+            confidence REAL NOT NULL,
+            top_contributing_factors_json TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
+MODEL_VERSION = "xgb_risk_tier_2010_2013_v1"
 
 TIER_NAMES = {0: "Low", 1: "Medium", 2: "High"}
 
@@ -48,7 +72,7 @@ def predict(case: CaseInput):
     contributions = pd.Series(class_shap, index=FEATURE_COLUMNS)
     top5 = contributions.reindex(contributions.abs().sort_values(ascending=False).index).head(5)
 
-    return {
+    result = {
         "risk_tier": TIER_NAMES[int(pred)],
         "confidence": float(proba[int(pred)]),
         "thresholds_days": THRESHOLDS,
@@ -57,6 +81,24 @@ def predict(case: CaseInput):
         ]
     }
 
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        "INSERT INTO predictions (timestamp, model_version, input_json, risk_tier, confidence, top_contributing_factors_json) VALUES (?, ?, ?, ?, ?, ?)",
+        (
+            datetime.now(timezone.utc).isoformat(),
+            MODEL_VERSION,
+            json.dumps(case.model_dump()),
+            result["risk_tier"],
+            result["confidence"],
+            json.dumps(result["top_contributing_factors"]),
+        )
+    )
+    conn.commit()
+    conn.close()
+
+    return result
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
