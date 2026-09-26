@@ -221,3 +221,10 @@ happened this session is what a real production system would have done
 automatically in response to this exact trigger.
 
 Full interactive report: monitoring/drift_report.html
+## Week 5 (cont.): Evidently Fairness Dashboard
+Added an Evidently ClassificationPreset report (monitoring/fairness_report.html)
+using the same test split as the final model, with type_name_normalized,
+court_tier, and district_name included as extra columns — Evidently
+automatically breaks down classification quality by these segments,
+complementing the custom sklearn-based subgroup audit from Week 3 with
+a genuine dashboard artifact.
