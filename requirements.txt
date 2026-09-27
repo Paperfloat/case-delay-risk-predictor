@@ -9,3 +9,4 @@ dvc
 fastapi
 uvicorn
 pytest
+streamlit
