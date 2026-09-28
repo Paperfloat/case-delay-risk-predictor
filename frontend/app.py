@@ -212,6 +212,13 @@ st.markdown("""
         color: #1B2A38 !important;
     }
     }
+        [data-testid="stMarkdownContainer"] .header-band h1,
+    [data-testid="stMarkdownContainer"] .header-band h1 * {
+        color: #EFEDE4 !important;
+    }
+    [data-testid="stMarkdownContainer"] .header-band p {
+        color: #B8BFC7 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -219,8 +226,8 @@ st.markdown("""
 <div class="header-band">
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <h1>Nyaya lens</h1>
-            <p>Case delay risk assessment for Delhi district courts</p>
+            <div style="font-family:'Lora',serif; font-weight:600; color:#EFEDE4; font-size:30px; line-height:1.2;">Nyaya Lens</div>
+            <p style="color:#B8BFC7 !important; margin:4px 0 0 0; font-size:14px;">Case delay risk assessment for Delhi district courts</p>
         </div>
         <div style="color:#8FBF9F; font-family:'IBM Plex Mono',monospace; font-size:13px;">
             &#9679; Model Ready
