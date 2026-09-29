@@ -5,9 +5,20 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from lifelines.utils import concordance_index
 
-slug = sys.argv[1]
-cutoff = pd.Timestamp(sys.argv[2])
-PATH = f"data/processed/cases_2010_2013_{slug}_survival_normalized.csv"
+import argparse
+sys.path.insert(0, "scripts/pipeline")
+from common import load_config, normalized_name
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--state", required=True)
+ap.add_argument("--cutoff", default=None, help="override the cutoff in config/states.yaml")
+args = ap.parse_args()
+args.pending = None
+cfg = load_config(args)
+assert cfg["keep_pending"], "train_survival.py needs a state with keep_pending: true"
+slug = cfg["slug"]
+cutoff = pd.Timestamp(args.cutoff or cfg["cutoff"])
+PATH = f"data/processed/{normalized_name(cfg)}"
 
 # filing-time features only
 CATS = ["type_name_normalized", "court_tier", "district_name",
