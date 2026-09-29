@@ -16,3 +16,5 @@ mlflow.db
 mlruns/
 *.swp
 audit_log.db
+mlruns/
+models/orissa_aft_2020-12-31.json
