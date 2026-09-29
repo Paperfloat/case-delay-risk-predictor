@@ -233,11 +233,12 @@ a genuine dashboard artifact.
 
 - **Data:** DDL 2010-2013 filings, 470,869 cases, 181,131 (38.5%) with no decision date.
 - **Censoring:** cases with no decision date are treated as still pending at the data cutoff. Checked: 99.7% have last and next listing dates, and only 0.5% were last listed more than 3 years before the cutoff, so they look actively pending rather than stale.
-- **Cutoff:** 2019-02-28, taken from where monthly decision volume drops (1,620 to 235). Sensitivity: 2020-12-31 gives C-index 0.7275 vs 0.7307.
+- **Cutoff:** 2019-02-28, taken from where monthly decision volume drops (1,620 to 235). Sensitivity: 2020-12-31 gives C-index 0.7400 vs 0.7435.
 - **Model:** XGBoost AFT (`survival:aft`, normal, scale 1.2), filing-time features only (case type, court tier, district, litigant/advocate gender fields).
-- **Result:** test C-index <fill from run>. Best-worst C-index gap: court tier <fill>, district <fill>, case type <fill>. C-index is not comparable to the Delhi Macro F1 (different target and metric).
+- **Result:** test C-index 0.7435 (2019-02-28 cutoff). Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.104 (Judicial Magistrate First Class 0.786 vs Civil Judge Senior Division 0.682), district 0.131 (Nabarangpur 0.791 vs Kendrapada 0.661), case type 0.131 (2(a)cc 0.714 vs mac case 0.583). C-index is not comparable to the Delhi Macro F1 (different target and metric).
 - **Limitations:**
   - Absolute predicted durations are not calibrated; use the model for ranking cases.
   - Pending rate differs strongly by district (about 5% in Gajapati to about 66% in Jharsuguda) and is flat across filing years. It is unclear whether this reflects real backlog or district-level recording differences.
   - Mass-disposal dates (e.g. 2014-12-06, 2015-12-12) cluster many decisions on single days.
   - Delhi uses a classifier with pending rows dropped; the two states are not yet on one modeling approach.
+  - Case-type spelling variants are still split across categories (e.g. `uc` and `uc case`, `gr` and `gr case`), which dilutes the per-type audit. Per-group C-index also depends on each group's censoring rate, so gaps are not a direct fairness measure.
