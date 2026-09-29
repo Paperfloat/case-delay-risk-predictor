@@ -8,7 +8,18 @@ on:
 
 jobs:
   validate-data:
+    name: validate-${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: delhi-2012
+            pull: data/processed/cases_2012_delhi_features.csv.dvc
+            run: python3 validation/validate_delhi_2012.py
+          - name: odisha
+            pull: normalize@odisha
+            run: python3 validation/validate_state_survival.py orissa
 
     steps:
       - name: Check out repository
@@ -30,9 +41,8 @@ jobs:
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
 
-      - name: Pull data from DVC remote
-        run: dvc pull --force
+      - name: Pull only the data this job needs
+        run: dvc pull --force ${{ matrix.pull }}
 
-      - name: Run Great Expectations Validation
-        run: |
-          python3 validation/validate_delhi_2012.py
+      - name: Run validation
+        run: ${{ matrix.run }}

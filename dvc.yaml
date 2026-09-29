@@ -1,0 +1,64 @@
+stages:
+  load:
+    foreach:
+      delhi: {slug: delhi}
+      odisha: {slug: orissa}
+    do:
+      cmd: python scripts/pipeline/load.py --state ${key}
+      deps:
+        - scripts/pipeline/load.py
+        - scripts/pipeline/common.py
+        - data/raw/cases/cases_2010.csv
+        - data/raw/cases/cases_2011.csv
+        - data/raw/cases/cases_2012.csv
+        - data/raw/cases/cases_2013.csv
+      params:
+        - config/states.yaml:
+            - years
+            - states.${key}
+      outs:
+        - data/raw/cases/cases_2010_${item.slug}.csv
+        - data/raw/cases/cases_2011_${item.slug}.csv
+        - data/raw/cases/cases_2012_${item.slug}.csv
+        - data/raw/cases/cases_2013_${item.slug}.csv
+
+  features:
+    foreach:
+      delhi: {slug: delhi, tag: ""}
+      odisha: {slug: orissa, tag: _survival}
+    do:
+      cmd: python scripts/pipeline/features.py --state ${key}
+      deps:
+        - scripts/pipeline/features.py
+        - scripts/pipeline/common.py
+        - data/raw/cases/cases_2010_${item.slug}.csv
+        - data/raw/cases/cases_2011_${item.slug}.csv
+        - data/raw/cases/cases_2012_${item.slug}.csv
+        - data/raw/cases/cases_2013_${item.slug}.csv
+        - data/raw/keys/type_name_key.csv
+        - data/raw/keys/purpose_name_key.csv
+        - data/raw/keys/disp_name_key.csv
+        - data/raw/keys/cases_district_key.csv
+        - data/raw/keys/cases_court_key.csv
+      params:
+        - config/states.yaml:
+            - years
+            - states.${key}
+      outs:
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.csv
+
+  # only states with normalize: true in config/states.yaml
+  normalize:
+    foreach:
+      odisha: {slug: orissa, tag: _survival}
+    do:
+      cmd: python scripts/pipeline/normalize.py --state ${key}
+      deps:
+        - scripts/pipeline/normalize.py
+        - scripts/pipeline/common.py
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.csv
+      params:
+        - config/states.yaml:
+            - states.${key}
+      outs:
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_normalized.csv

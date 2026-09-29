@@ -1,9 +1,13 @@
-import sys
+import os
 import pandas as pd
+from common import get_args, load_config, features_name
 
-state_code = sys.argv[1]
-slug = sys.argv[2]
-YEARS = [2010, 2011, 2012, 2013]
+args = get_args()
+cfg = load_config(args)
+state_code, slug, YEARS = cfg["code"], cfg["slug"], cfg["years"]
+out_dir = args.out_dir or "data/processed"
+os.makedirs(out_dir, exist_ok=True)
+print(f"State {cfg['state']} (code {state_code}, slug {slug}) | keep_pending={cfg['keep_pending']}")
 
 type_key = pd.read_csv('data/raw/keys/type_name_key.csv', dtype=str)
 type_key = type_key[['year', 'type_name', 'type_name_s']]
@@ -34,9 +38,14 @@ for year in YEARS:
     print(f"\n--- Processing {year} ---")
     df = pd.read_csv(f'data/raw/cases/cases_{year}_{slug}.csv', dtype=str)
     total = len(df)
-    df['event'] = df['date_of_decision'].notna().astype(int)  # 1 = decided, 0 = pending (censored)
-    n = len(df)
-    print(f"Kept {(df['event'] == 0).sum()} pending rows ({(df['event'] == 0).mean():.1%}) as censored")
+    if cfg['keep_pending']:
+        df['event'] = df['date_of_decision'].notna().astype(int)  # 1 = decided, 0 = pending (censored)
+        n = len(df)
+        print(f"Kept {(df['event'] == 0).sum()} pending rows ({(df['event'] == 0).mean():.1%}) as censored")
+    else:
+        df = df[df['date_of_decision'].notna()].copy()
+        n = len(df)
+        print(f"Dropped {total - n} censored rows ({(total - n) / total:.1%})")
 
     df = df.merge(type_key, on=['year', 'type_name'], how='left')
     df = df.merge(purpose_key, on=['year', 'purpose_name'], how='left')
@@ -60,9 +69,11 @@ for year in YEARS:
         df.loc[bad, c] = pd.NaT
     df['days_to_disposition'] = (df['date_of_decision'] - df['date_of_filing']).dt.days
     df.loc[df['days_to_disposition'] < 0, 'days_to_disposition'] = pd.NA
-    bad_decided = (df['event'] == 1) & df['days_to_disposition'].isna()
-    print(f"Dropped {bad_decided.sum()} decided rows with invalid duration")
-    df = df[~bad_decided].copy()
+
+    if cfg['keep_pending']:
+        bad_decided = (df['event'] == 1) & df['days_to_disposition'].isna()
+        print(f"Dropped {bad_decided.sum()} decided rows with invalid duration")
+        df = df[~bad_decided].copy()
 
     last = df['date_last_list'].where(df['date_last_list'] != '5000-01-01', pd.NA)
     df['date_last_list_clean'] = last
@@ -78,8 +89,10 @@ for year in YEARS:
     all_years.append(df)
 
 combined = pd.concat(all_years, ignore_index=True)
-combined.to_csv(f'data/processed/cases_2010_2013_{slug}_survival_features.csv', index=False)
-print(f"\nCombined shape: {combined.shape}")
+out = f"{out_dir}/{features_name(cfg)}"
+combined.to_csv(out, index=False)
+print(f"\nSaved {out}")
+print(f"Combined shape: {combined.shape}")
 print(combined['year'].value_counts().sort_index())
 print("\nCourt tier values:")
 print(combined['court_tier'].value_counts().head(15))

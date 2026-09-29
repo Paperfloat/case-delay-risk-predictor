@@ -1,16 +1,27 @@
+import os
 import re
 import sys
 import pandas as pd
+from common import get_args, load_config, features_name, normalized_name
 
-slug = sys.argv[1]
-TOP_TYPES = 100
+args = get_args()
+cfg = load_config(args)
+if not cfg.get("normalize"):
+    print(f"normalize=false for {cfg['state']}, nothing to do")
+    sys.exit(0)
 
-df = pd.read_csv(f'data/processed/cases_2010_2013_{slug}_survival_features.csv', dtype=str)
+TOP_TYPES = cfg.get("top_case_types", 100)
+out_dir = args.out_dir or "data/processed"
+os.makedirs(out_dir, exist_ok=True)
+
+df = pd.read_csv(f"{args.in_dir}/{features_name(cfg)}", dtype=str)
+
 
 def clean(text):
     s = str(text).lower().replace('.', '')
     s = re.sub(r'[()&,\-]', ' ', s)
     return re.sub(r'\s+', ' ', s).strip()
+
 
 def tier_of(name):
     s = clean(name)
@@ -36,6 +47,7 @@ def tier_of(name):
         return 'District and Sessions Judge'
     return 'Other / unclear'
 
+
 df['court_tier_raw'] = df['court_tier']
 df['court_tier'] = df['court_tier_raw'].apply(tier_of)
 
@@ -52,5 +64,6 @@ print(unclear.head(15).to_string())
 print("\nCase types kept:", len(top))
 print("Rows grouped as 'other':", (df['type_name_normalized'] == 'other').sum())
 
-df.to_csv(f'data/processed/cases_2010_2013_{slug}_survival_normalized.csv', index=False)
-print("\nSaved normalized file")
+out = f"{out_dir}/{normalized_name(cfg)}"
+df.to_csv(out, index=False)
+print(f"\nSaved {out}")
