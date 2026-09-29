@@ -228,3 +228,16 @@ court_tier, and district_name included as extra columns — Evidently
 automatically breaks down classification quality by these segments,
 complementing the custom sklearn-based subgroup audit from Week 3 with
 a genuine dashboard artifact.
+
+## Odisha (state code 11): survival model
+
+- **Data:** DDL 2010-2013 filings, 470,869 cases, 181,131 (38.5%) with no decision date.
+- **Censoring:** cases with no decision date are treated as still pending at the data cutoff. Checked: 99.7% have last and next listing dates, and only 0.5% were last listed more than 3 years before the cutoff, so they look actively pending rather than stale.
+- **Cutoff:** 2019-02-28, taken from where monthly decision volume drops (1,620 to 235). Sensitivity: 2020-12-31 gives C-index 0.7275 vs 0.7307.
+- **Model:** XGBoost AFT (`survival:aft`, normal, scale 1.2), filing-time features only (case type, court tier, district, litigant/advocate gender fields).
+- **Result:** test C-index <fill from run>. Best-worst C-index gap: court tier <fill>, district <fill>, case type <fill>. C-index is not comparable to the Delhi Macro F1 (different target and metric).
+- **Limitations:**
+  - Absolute predicted durations are not calibrated; use the model for ranking cases.
+  - Pending rate differs strongly by district (about 5% in Gajapati to about 66% in Jharsuguda) and is flat across filing years. It is unclear whether this reflects real backlog or district-level recording differences.
+  - Mass-disposal dates (e.g. 2014-12-06, 2015-12-12) cluster many decisions on single days.
+  - Delhi uses a classifier with pending rows dropped; the two states are not yet on one modeling approach.
