@@ -12,3 +12,18 @@ states:
     normalize: true
     top_case_types: 100
     cutoff: "2019-02-28"     # data cutoff for survival censoring
+  bihar:
+    code: "08"
+    keep_pending: true
+    normalize: true
+    top_case_types: 100
+    tier_ruleset: bihar
+    cutoff: "2019-05-31"
+
+validation:
+  odisha:
+    rows: [400000, 550000]
+    decided_share: [0.55, 0.68]
+  bihar:
+    rows: [700000, 950000]
+    decided_share: [0.38, 0.52]

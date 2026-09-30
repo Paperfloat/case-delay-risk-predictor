@@ -27,13 +27,14 @@ def load_config(args):
         c["keep_pending"] = args.pending == "keep"
     c["keep_pending"] = bool(c.get("keep_pending", False))
     c["tag"] = "_survival" if c["keep_pending"] else ""
+    c["ext"] = "csv.gz" if c["keep_pending"] else "csv"
     c["span"] = f"{c['years'][0]}_{c['years'][-1]}"
     return c
 
 
 def features_name(c):
-    return f"cases_{c['span']}_{c['slug']}{c['tag']}_features.csv"
+    return f"cases_{c['span']}_{c['slug']}{c['tag']}_features.{c['ext']}"
 
 
 def normalized_name(c):
-    return f"cases_{c['span']}_{c['slug']}{c['tag']}_normalized.csv"
+    return f"cases_{c['span']}_{c['slug']}{c['tag']}_normalized.{c['ext']}"
