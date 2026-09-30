@@ -48,8 +48,29 @@ def tier_of(name):
     return 'Other / unclear'
 
 
+def tier_of_bihar(name):
+    s = clean(name)
+    t = s.replace(' ', '')
+    if 'cjm' in t or 'chiefjudicial' in t or 'cheifjudicial' in t:
+        return 'Chief Judicial Magistrate'
+    if 'additionaldistrict' in t or 'addl' in t:
+        return 'Additional District / Sessions Judge'
+    if 'sess' in t or 'districtjudge' in t or t.startswith('dj') or 'djdiv' in t or 'jdivision' in t and t.startswith('nau'):
+        return 'District and Sessions Judge'
+    if 'civil' in t or 'cjsd' in t:
+        if 'junior' in t or 'jr' in t:
+            return 'Civil Judge (Junior Division)'
+        if 'senior' in t or 'sr' in t or 'cjsd' in t:
+            return 'Civil Judge (Senior Division)'
+        return 'Civil Judge (division unclear)'
+    return 'Other / unclear'
+
+
+RULES = {'bihar': tier_of_bihar}
+rule = RULES.get(cfg.get('tier_ruleset'), tier_of)
+print("Court tier rule set:", cfg.get('tier_ruleset', 'base'))
 df['court_tier_raw'] = df['court_tier']
-df['court_tier'] = df['court_tier_raw'].apply(tier_of)
+df['court_tier'] = df['court_tier_raw'].apply(rule)
 
 top = df['type_name_normalized'].value_counts().head(TOP_TYPES).index
 df['type_name_raw_norm'] = df['type_name_normalized']
