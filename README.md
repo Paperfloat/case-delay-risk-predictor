@@ -242,3 +242,15 @@ a genuine dashboard artifact.
   - Mass-disposal dates (e.g. 2014-12-06, 2015-12-12) cluster many decisions on single days.
   - Delhi uses a classifier with pending rows dropped; the two states are not yet on one modeling approach.
   - Case-type spelling variants are still split across categories (e.g. `uc` and `uc case`, `gr` and `gr case`), which dilutes the per-type audit. Per-group C-index also depends on each group's censoring rate, so gaps are not a direct fairness measure.
+
+## Bihar (state code 08): survival model
+
+- **Data:** DDL 2010-2013 filings, 816,809 cases, 54.5% with no decision date (61.3% of 2010 filings falling to 50.4% of 2013 filings).
+- **Censoring:** cases with no decision date are treated as still pending at the cutoff. Checked: 99.3% of pending cases have a next listing date, and only 0.9% were last listed more than 3 years before the cutoff.
+- **Cutoff:** 2019-05-31, estimated as the end of the month of the 90th percentile of pending cases' last listing date. The same rule gives 2019-02-28 for Odisha, matching the value found from its decision-volume drop.
+- **Model:** XGBoost AFT, same setup and filing-time features as Odisha. It reached the 1,500-round cap without early stopping, so it is not fully converged.
+- **Result:** test C-index 0.7963. Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.196 (District and Sessions Judge 0.851 vs Civil Judge Senior Division 0.655), district 0.189 (Patna 0.828 vs Araria 0.639), case type 0.281 (other 0.811 vs gr/police cases 0.530).
+- **Limitations:**
+  - The pending share falls for newer filing years, the opposite of what pure right-censoring predicts. The listing checks say the pending cases are active, but this pattern is unexplained.
+  - Court-tier names are matched by a Bihar-specific rule set. `Civil Judge (division unclear)` merges senior and junior civil courts (4.2% of cases), 2.2% of cases stay unclassified (e.g. `Criminal Proceeding`, `JJPDJ`), and 63% of cases fall in Chief Judicial Magistrate courts.
+  - The C-index depends on each state's censoring rate and case mix, so it is not comparable across states or with the Delhi Macro F1. Part of Bihar's headline value comes from separating court tiers.
