@@ -83,3 +83,18 @@ stages:
       - models/orissa_aft_feature_columns.json
       - reports/orissa_survival_fairness_${states.odisha.cutoff}.csv:
           cache: false
+
+  train_bihar:
+    cmd: python scripts/train_survival.py --state bihar
+    deps:
+      - scripts/train_survival.py
+      - scripts/pipeline/common.py
+      - data/processed/cases_2010_2013_bihar_survival_normalized.csv.gz
+    params:
+      - config/states.yaml:
+          - states.bihar.cutoff
+    outs:
+      - models/bihar_aft_${states.bihar.cutoff}.json
+      - models/bihar_aft_feature_columns.json
+      - reports/bihar_survival_fairness_${states.bihar.cutoff}.csv:
+          cache: false
