@@ -1,0 +1,60 @@
+dimension,group,n,censored,c_index
+court_tier,Civil Judge (Senior Division),7065,0.602,0.6549
+court_tier,Civil Judge (division unclear),5213,0.542,0.7318
+court_tier,Chief Judicial Magistrate,77483,0.634,0.7408
+court_tier,Other / unclear,2613,0.601,0.7736
+court_tier,District and Sessions Judge,29998,0.349,0.8509
+district_name,Araria,3184,0.534,0.6391
+district_name,Vaishali,2228,0.961,0.6405
+district_name,Kishanganj,1079,0.492,0.6421
+district_name,Begusarai,4150,0.38,0.6489
+district_name,Khagaria,1997,0.569,0.6504
+district_name,Supaul,2147,0.659,0.664
+district_name,Sitamarhi,2311,0.652,0.6643
+district_name,Purnea,4735,0.392,0.6747
+district_name,Gaya,2709,0.965,0.686
+district_name,Madhubani,4502,0.463,0.6878
+district_name,Madhepura,1812,0.511,0.6895
+district_name,Buxar,2866,0.518,0.6909
+district_name,Motihari,3645,0.675,0.6954
+district_name,Lakhisarai,1365,0.701,0.6977
+district_name,Banka,1867,0.657,0.7021
+district_name,Darbhanga,5560,0.403,0.7057
+district_name,Rohtas Sasaram,4274,0.502,0.7118
+district_name,Gopalganj,4342,0.523,0.7121
+district_name,Aurangabad,1905,0.202,0.7215
+district_name,Kaimur at Bhabhua,3383,0.356,0.7228
+district_name,Munger,2271,0.546,0.7263
+district_name,Siwan,4189,0.704,0.7332
+district_name,Bettiah,4221,0.697,0.7341
+district_name,Nalanda,3265,0.811,0.7386
+district_name,Samastipur,6334,0.464,0.7397
+district_name,Jamui,2248,0.619,0.7416
+district_name,Bhagalpur,2744,0.799,0.7529
+district_name,Saharsa,2285,0.712,0.755
+district_name,Muzaffarpur,4147,0.944,0.758
+district_name,Katihar,4736,0.426,0.7705
+district_name,Saran at Chapra,3821,0.237,0.797
+district_name,Bhojpur,2144,0.958,0.8007
+district_name,Patna,17230,0.47,0.8282
+type_name_normalized,gr/police cases,1181,0.665,0.5301
+type_name_normalized,regular bail,2138,0.071,0.5706
+type_name_normalized,gr police cases,2026,0.53,0.5783
+type_name_normalized,general register,1194,0.735,0.5882
+type_name_normalized,reg cri case,1887,0.64,0.6152
+type_name_normalized,anticipatory bail,4117,0.0,0.6193
+type_name_normalized,indian penal code (ipc),3700,0.696,0.6297
+type_name_normalized,title appeal,1043,0.645,0.6636
+type_name_normalized,maintainance,1550,0.111,0.6639
+type_name_normalized,session case,6854,0.623,0.6642
+type_name_normalized,cri rev app,1139,0.15,0.6698
+type_name_normalized,cr case,3370,0.671,0.671
+type_name_normalized,matrimonial case,1443,0.105,0.6759
+type_name_normalized,title suit,7817,0.599,0.6802
+type_name_normalized,criminal case,1570,0.584,0.6834
+type_name_normalized,cr case complaint (p),18909,0.543,0.6851
+type_name_normalized,gr,2571,0.678,0.7143
+type_name_normalized,cri case,26701,0.738,0.7662
+type_name_normalized,cr case complaint (o),1630,0.663,0.7702
+type_name_normalized,gr case,7432,0.618,0.7825
+type_name_normalized,other,3177,0.571,0.811

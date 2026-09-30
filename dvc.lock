@@ -488,3 +488,34 @@ stages:
       hash: md5
       md5: 3da71012db1fb9693f5d328a82537ebd
       size: 2126
+  train_bihar:
+    cmd: python scripts/train_survival.py --state bihar
+    deps:
+    - path: data/processed/cases_2010_2013_bihar_survival_normalized.csv.gz
+      hash: md5
+      md5: dd53c72794f3b2febbbd3d4660ccfed6
+      size: 21227132
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/train_survival.py
+      hash: md5
+      md5: f6b60ca2dde2ec130fbfab0bdfda4979
+      size: 4671
+    params:
+      config/states.yaml:
+        states.bihar.cutoff: '2019-05-31'
+    outs:
+    - path: models/bihar_aft_2019-05-31.json
+      hash: md5
+      md5: ffe7dacb61c7abdcd95c624c58f52ed8
+      size: 7307862
+    - path: models/bihar_aft_feature_columns.json
+      hash: md5
+      md5: a7c7cfb004e2a40ec9bdd09758c570f1
+      size: 5614
+    - path: reports/bihar_survival_fairness_2019-05-31.csv
+      hash: md5
+      md5: 90f46287c9c17a62c0e7cde71f5cc7c8
+      size: 2770
