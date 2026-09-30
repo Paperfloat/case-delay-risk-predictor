@@ -254,3 +254,7 @@ a genuine dashboard artifact.
   - The pending share falls for newer filing years, the opposite of what pure right-censoring predicts. The listing checks say the pending cases are active, but this pattern is unexplained.
   - Court-tier names are matched by a Bihar-specific rule set. `Civil Judge (division unclear)` merges senior and junior civil courts (4.2% of cases), 2.2% of cases stay unclassified (e.g. `Criminal Proceeding`, `JJPDJ`), and 63% of cases fall in Chief Judicial Magistrate courts.
   - The C-index depends on each state's censoring rate and case mix, so it is not comparable across states or with the Delhi Macro F1. Part of Bihar's headline value comes from separating court tiers.
+
+### Training-length experiment (Odisha, Bihar)
+
+Both DVC training stages use learning rate 0.05 with a 1,500-round cap and reach the cap without early stopping. A separate sweep (`scripts/experiments/tune_survival.py`) found that training to convergence at learning rate 0.10 gives test C-index 0.7484 on Odisha (+0.005) and 0.7985 on Bihar (+0.002). On Odisha, tree depth 8 and AFT scale 0.8 or 2.0 added nothing further (all within 0.001 on validation). The stages were left at the original setting because the gain is small.
