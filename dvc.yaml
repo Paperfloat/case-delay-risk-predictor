@@ -3,6 +3,7 @@ stages:
     foreach:
       delhi: {slug: delhi}
       odisha: {slug: orissa}
+      bihar: {slug: bihar}
     do:
       cmd: python scripts/pipeline/load.py --state ${key}
       deps:
@@ -24,8 +25,9 @@ stages:
 
   features:
     foreach:
-      delhi: {slug: delhi, tag: ""}
-      odisha: {slug: orissa, tag: _survival}
+      delhi: {slug: delhi, tag: "", ext: csv}
+      odisha: {slug: orissa, tag: _survival, ext: csv.gz}
+      bihar: {slug: bihar, tag: _survival, ext: csv.gz}
     do:
       cmd: python scripts/pipeline/features.py --state ${key}
       deps:
@@ -45,20 +47,21 @@ stages:
             - years
             - states.${key}
       outs:
-        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.csv
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.${item.ext}
 
   # only states with normalize: true in config/states.yaml
   normalize:
     foreach:
-      odisha: {slug: orissa, tag: _survival}
+      odisha: {slug: orissa, tag: _survival, ext: csv.gz}
+      bihar: {slug: bihar, tag: _survival, ext: csv.gz}
     do:
       cmd: python scripts/pipeline/normalize.py --state ${key}
       deps:
         - scripts/pipeline/normalize.py
         - scripts/pipeline/common.py
-        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.csv
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_features.${item.ext}
       params:
         - config/states.yaml:
             - states.${key}
       outs:
-        - data/processed/cases_2010_2013_${item.slug}${item.tag}_normalized.csv
+        - data/processed/cases_2010_2013_${item.slug}${item.tag}_normalized.${item.ext}

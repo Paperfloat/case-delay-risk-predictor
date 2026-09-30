@@ -25,8 +25,8 @@ stages:
       isexec: true
     - path: scripts/pipeline/common.py
       hash: md5
-      md5: e7cbc491d5be28a7473aa71f3d0d7004
-      size: 1302
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
     - path: scripts/pipeline/load.py
       hash: md5
       md5: 75d28229e72f6e6710ea6cc58b0b7f3f
@@ -84,8 +84,8 @@ stages:
       isexec: true
     - path: scripts/pipeline/common.py
       hash: md5
-      md5: e7cbc491d5be28a7473aa71f3d0d7004
-      size: 1302
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
     - path: scripts/pipeline/load.py
       hash: md5
       md5: 75d28229e72f6e6710ea6cc58b0b7f3f
@@ -167,8 +167,8 @@ stages:
       isexec: true
     - path: scripts/pipeline/common.py
       hash: md5
-      md5: e7cbc491d5be28a7473aa71f3d0d7004
-      size: 1302
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
     - path: scripts/pipeline/features.py
       hash: md5
       md5: 9b4dc1f31f8ff4a6930567791a05d270
@@ -235,8 +235,8 @@ stages:
       isexec: true
     - path: scripts/pipeline/common.py
       hash: md5
-      md5: e7cbc491d5be28a7473aa71f3d0d7004
-      size: 1302
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
     - path: scripts/pipeline/features.py
       hash: md5
       md5: 9b4dc1f31f8ff4a6930567791a05d270
@@ -256,25 +256,25 @@ stages:
         - 2012
         - 2013
     outs:
-    - path: data/processed/cases_2010_2013_orissa_survival_features.csv
+    - path: data/processed/cases_2010_2013_orissa_survival_features.csv.gz
       hash: md5
-      md5: 4c403122c0b29167e92eb388e1e160e6
-      size: 143035668
+      md5: 759edc9aab38de319f74e920ad808829
+      size: 12052018
   normalize@odisha:
     cmd: python scripts/pipeline/normalize.py --state odisha
     deps:
-    - path: data/processed/cases_2010_2013_orissa_survival_features.csv
+    - path: data/processed/cases_2010_2013_orissa_survival_features.csv.gz
       hash: md5
-      md5: 4c403122c0b29167e92eb388e1e160e6
-      size: 143035668
+      md5: 759edc9aab38de319f74e920ad808829
+      size: 12052018
     - path: scripts/pipeline/common.py
       hash: md5
-      md5: e7cbc491d5be28a7473aa71f3d0d7004
-      size: 1302
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
     - path: scripts/pipeline/normalize.py
       hash: md5
-      md5: 27af7652ab8d82c0ba83cd30df39dfd5
-      size: 2453
+      md5: cf923c726531004af937d6eb4444fa95
+      size: 3363
     params:
       config/states.yaml:
         states.odisha:
@@ -285,7 +285,169 @@ stages:
           top_case_types: 100
           cutoff: '2019-02-28'
     outs:
-    - path: data/processed/cases_2010_2013_orissa_survival_normalized.csv
+    - path: data/processed/cases_2010_2013_orissa_survival_normalized.csv.gz
       hash: md5
-      md5: a2e6b11026cc39e7e8552bd4d25e9312
-      size: 159494160
+      md5: 062e68f41e56b510e3e17ef77a0c6f38
+      size: 12218017
+  load@bihar:
+    cmd: python scripts/pipeline/load.py --state bihar
+    deps:
+    - path: data/raw/cases/cases_2010.csv
+      hash: md5
+      md5: 148793a8917511edf6cb874c1aa2aadd
+      size: 856992005
+      isexec: true
+    - path: data/raw/cases/cases_2011.csv
+      hash: md5
+      md5: 2225e0265068ae7363052e8f6e70d034
+      size: 1043869803
+      isexec: true
+    - path: data/raw/cases/cases_2012.csv
+      hash: md5
+      md5: 086a940e47c084786b32e09ffba83068
+      size: 1282984974
+      isexec: true
+    - path: data/raw/cases/cases_2013.csv
+      hash: md5
+      md5: b410fd52559ff0deeb0199bf7b65c572
+      size: 1514325283
+      isexec: true
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/pipeline/load.py
+      hash: md5
+      md5: 75d28229e72f6e6710ea6cc58b0b7f3f
+      size: 598
+    params:
+      config/states.yaml:
+        states.bihar:
+          code: '08'
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          tier_ruleset: bihar
+          cutoff: '2019-05-31'
+        years:
+        - 2010
+        - 2011
+        - 2012
+        - 2013
+    outs:
+    - path: data/raw/cases/cases_2010_bihar.csv
+      hash: md5
+      md5: c8a73235a4ce78c52096c27ce56b3f65
+      size: 23799680
+    - path: data/raw/cases/cases_2011_bihar.csv
+      hash: md5
+      md5: d7b73d8d47a74b4ebd2d147fda9d4c64
+      size: 29395274
+    - path: data/raw/cases/cases_2012_bihar.csv
+      hash: md5
+      md5: 9dc14f94f1bb04521d9f9e33dbb5a18e
+      size: 37124044
+    - path: data/raw/cases/cases_2013_bihar.csv
+      hash: md5
+      md5: 8da7be0f562b3cd91023c3edc3c8834d
+      size: 49070610
+  features@bihar:
+    cmd: python scripts/pipeline/features.py --state bihar
+    deps:
+    - path: data/raw/cases/cases_2010_bihar.csv
+      hash: md5
+      md5: c8a73235a4ce78c52096c27ce56b3f65
+      size: 23799680
+    - path: data/raw/cases/cases_2011_bihar.csv
+      hash: md5
+      md5: d7b73d8d47a74b4ebd2d147fda9d4c64
+      size: 29395274
+    - path: data/raw/cases/cases_2012_bihar.csv
+      hash: md5
+      md5: 9dc14f94f1bb04521d9f9e33dbb5a18e
+      size: 37124044
+    - path: data/raw/cases/cases_2013_bihar.csv
+      hash: md5
+      md5: 8da7be0f562b3cd91023c3edc3c8834d
+      size: 49070610
+    - path: data/raw/keys/cases_court_key.csv
+      hash: md5
+      md5: ed43671e6b397c52670a7ccd3b376f39
+      size: 4607163
+      isexec: true
+    - path: data/raw/keys/cases_district_key.csv
+      hash: md5
+      md5: f5d80133f98bd4ce1bbd34a805552f56
+      size: 46062
+      isexec: true
+    - path: data/raw/keys/disp_name_key.csv
+      hash: md5
+      md5: 78787dd1c567f64feac58b8b8f0932d4
+      size: 12324
+      isexec: true
+    - path: data/raw/keys/purpose_name_key.csv
+      hash: md5
+      md5: f48d795793f5e81b14ea2c352d2e16ff
+      size: 2715640
+      isexec: true
+    - path: data/raw/keys/type_name_key.csv
+      hash: md5
+      md5: 78717289679632599f85f1c91705edcf
+      size: 1862573
+      isexec: true
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/pipeline/features.py
+      hash: md5
+      md5: 9b4dc1f31f8ff4a6930567791a05d270
+      size: 4761
+    params:
+      config/states.yaml:
+        states.bihar:
+          code: '08'
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          tier_ruleset: bihar
+          cutoff: '2019-05-31'
+        years:
+        - 2010
+        - 2011
+        - 2012
+        - 2013
+    outs:
+    - path: data/processed/cases_2010_2013_bihar_survival_features.csv.gz
+      hash: md5
+      md5: 98eeb1c94221de8c970d93737a024dd1
+      size: 20905961
+  normalize@bihar:
+    cmd: python scripts/pipeline/normalize.py --state bihar
+    deps:
+    - path: data/processed/cases_2010_2013_bihar_survival_features.csv.gz
+      hash: md5
+      md5: 98eeb1c94221de8c970d93737a024dd1
+      size: 20905961
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/pipeline/normalize.py
+      hash: md5
+      md5: cf923c726531004af937d6eb4444fa95
+      size: 3363
+    params:
+      config/states.yaml:
+        states.bihar:
+          code: '08'
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          tier_ruleset: bihar
+          cutoff: '2019-05-31'
+    outs:
+    - path: data/processed/cases_2010_2013_bihar_survival_normalized.csv.gz
+      hash: md5
+      md5: dd53c72794f3b2febbbd3d4660ccfed6
+      size: 21227132

@@ -3,8 +3,19 @@ import pandas as pd
 import great_expectations as gx
 import great_expectations.expectations as gxe
 
-slug = sys.argv[1]
-PATH = f"data/processed/cases_2010_2013_{slug}_survival_normalized.csv"
+import argparse
+import yaml
+sys.path.insert(0, "scripts/pipeline")
+from common import load_config, normalized_name
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--state", required=True)
+args = ap.parse_args()
+args.pending = None
+cfg = load_config(args)
+slug = cfg["slug"]
+V = yaml.safe_load(open("config/states.yaml"))["validation"][args.state]
+PATH = f"data/processed/{normalized_name(cfg)}"
 
 EXPECTED_COLS = {
     "ddl_case_id", "year", "state_code", "dist_code", "court_no", "cino", "judge_position",
@@ -18,7 +29,7 @@ TIERS = ["Chief Judicial Magistrate", "Sub-Divisional Judicial Magistrate",
          "Civil Judge (Senior Division)", "District and Sessions Judge",
          "Judicial Magistrate First Class", "Civil Judge cum JMFC", "Other / unclear",
          "Additional District / Sessions Judge", "Civil Judge cum SDJM",
-         "Civil Judge (Junior Division)"]
+         "Civil Judge (Junior Division)", "Civil Judge (division unclear)"]
 
 results = []
 header = pd.read_csv(PATH, nrows=0).columns.tolist()
@@ -42,11 +53,11 @@ bd = asset.add_batch_definition_whole_dataframe("whole")
 batch = bd.get_batch(batch_parameters={"dataframe": df})
 
 checks = [
-    ("row count in expected range", gxe.ExpectTableRowCountToBeBetween(min_value=400000, max_value=550000)),
+    ("row count in expected range", gxe.ExpectTableRowCountToBeBetween(min_value=V["rows"][0], max_value=V["rows"][1])),
     ("event not null", gxe.ExpectColumnValuesToNotBeNull(column="event")),
     ("event in {0,1}", gxe.ExpectColumnValuesToBeInSet(column="event", value_set=[0, 1])),
-    ("decided share within 0.55-0.68 (pending-rate drift guard)",
-     gxe.ExpectColumnMeanToBeBetween(column="event", min_value=0.55, max_value=0.68)),
+    ("decided share within configured range (pending-rate drift guard)",
+     gxe.ExpectColumnMeanToBeBetween(column="event", min_value=V["decided_share"][0], max_value=V["decided_share"][1])),
     ("event/duration consistent (decided has duration, pending has none)",
      gxe.ExpectColumnValuesToBeInSet(column="inconsistent", value_set=[0])),
     ("filing date parses", gxe.ExpectColumnValuesToNotBeNull(column="filing_year", mostly=0.999)),
