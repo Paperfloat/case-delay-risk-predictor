@@ -1,0 +1,33 @@
+dimension,group,n,censored,c_index
+court_tier,Civil Judge (Senior Division),12973,0.056,0.6196
+court_tier,Labour / Industrial Tribunal,3691,0.081,0.7211
+court_tier,District and Sessions Judge,27984,0.066,0.7291
+court_tier,Chief Judicial Magistrate,20259,0.204,0.7359
+court_tier,Family Court,4050,0.049,0.7689
+district_name,Shahdara,3227,0.137,0.641
+district_name,South West,10103,0.052,0.6782
+district_name,East,4783,0.113,0.6923
+district_name,North East,6021,0.049,0.6972
+district_name,Central,11964,0.092,0.7326
+district_name,South East,4428,0.087,0.7436
+district_name,South,4640,0.084,0.7582
+district_name,West,7047,0.144,0.7614
+district_name,New Delhi,3999,0.152,0.7729
+district_name,North,5207,0.159,0.7742
+district_name,North West,7538,0.141,0.7795
+type_name_normalized,misc dj,1255,0.027,0.5723
+type_name_normalized,cs scj,4368,0.065,0.5746
+type_name_normalized,civ suit,2794,0.019,0.5747
+type_name_normalized,cr rev,1679,0.001,0.5781
+type_name_normalized,cr cases,4209,0.308,0.595
+type_name_normalized,cr case,3090,0.472,0.6003
+type_name_normalized,ex,4301,0.038,0.6093
+type_name_normalized,sc,1888,0.151,0.6108
+type_name_normalized,cs,2609,0.1,0.6201
+type_name_normalized,arbtn,3618,0.007,0.6229
+type_name_normalized,ca,1076,0.003,0.6314
+type_name_normalized,mact,2856,0.036,0.6487
+type_name_normalized,cs dj,3240,0.154,0.6734
+type_name_normalized,l i r,2690,0.067,0.6765
+type_name_normalized,hma,4110,0.018,0.6901
+type_name_normalized,ct cases,13309,0.1,0.7099

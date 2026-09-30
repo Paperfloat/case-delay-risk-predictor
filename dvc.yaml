@@ -31,6 +31,7 @@ stages:
       delhi: {slug: delhi, tag: "", ext: csv}
       odisha: {slug: orissa, tag: _survival, ext: csv.gz}
       bihar: {slug: bihar, tag: _survival, ext: csv.gz}
+      delhi_survival: {slug: delhi, tag: _survival, ext: csv.gz}
     do:
       cmd: python scripts/pipeline/features.py --state ${key}
       deps:
@@ -57,6 +58,7 @@ stages:
     foreach:
       odisha: {slug: orissa, tag: _survival, ext: csv.gz}
       bihar: {slug: bihar, tag: _survival, ext: csv.gz}
+      delhi_survival: {slug: delhi, tag: _survival, ext: csv.gz}
     do:
       cmd: python scripts/pipeline/normalize.py --state ${key}
       deps:
@@ -97,4 +99,19 @@ stages:
       - models/bihar_aft_${states.bihar.cutoff}.json
       - models/bihar_aft_feature_columns.json
       - reports/bihar_survival_fairness_${states.bihar.cutoff}.csv:
+          cache: false
+
+  train_delhi_survival:
+    cmd: python scripts/train_survival.py --state delhi_survival
+    deps:
+      - scripts/train_survival.py
+      - scripts/pipeline/common.py
+      - data/processed/cases_2010_2013_delhi_survival_normalized.csv.gz
+    params:
+      - config/states.yaml:
+          - states.delhi_survival.cutoff
+    outs:
+      - models/delhi_aft_${states.delhi_survival.cutoff}.json
+      - models/delhi_aft_feature_columns.json
+      - reports/delhi_survival_fairness_${states.delhi_survival.cutoff}.csv:
           cache: false

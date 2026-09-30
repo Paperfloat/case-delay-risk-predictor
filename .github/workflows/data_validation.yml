@@ -23,6 +23,9 @@ jobs:
           - name: bihar
             pull: normalize@bihar
             run: python3 validation/validate_state_survival.py --state bihar
+          - name: delhi-survival
+            pull: normalize@delhi_survival
+            run: python3 validation/validate_state_survival.py --state delhi_survival
 
     steps:
       - name: Check out repository
