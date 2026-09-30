@@ -258,3 +258,26 @@ a genuine dashboard artifact.
 ### Training-length experiment (Odisha, Bihar)
 
 Both DVC training stages use learning rate 0.05 with a 1,500-round cap and reach the cap without early stopping. A separate sweep (`scripts/experiments/tune_survival.py`) found that training to convergence at learning rate 0.10 gives test C-index 0.7484 on Odisha (+0.005) and 0.7985 on Bihar (+0.002). On Odisha, tree depth 8 and AFT scale 0.8 or 2.0 added nothing further (all within 0.001 on validation). The stages were left at the original setting because the gain is small.
+
+## Delhi (state code 26): survival mode
+
+- **Data:** DDL 2010-2013 filings, 459,712 cases, about 10% with no decision date. The original Delhi classifier drops those cases and is unchanged; this is a separate `delhi_survival` entry.
+- **Censoring and cutoff:** same rule as Odisha and Bihar. Cutoff 2019-02-28, estimated from pending cases' last listing dates and consistent with the drop in monthly decisions (1,649 in Jan 2019, 607 in Feb, 161 in Mar). 99.9% of pending cases have a next listing date.
+- **Model:** XGBoost AFT, same setup and features as the other states. It reached the 1,500-round cap without early stopping.
+- **Result:** test C-index 0.7499. Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.149 (Family Court 0.769 vs Civil Judge (Senior Division) 0.620); district 0.138 (North West 0.779 vs Shahdara 0.641); case type 0.138 (ct cases 0.710 vs misc dj 0.572).
+- **Limitations:** court tiers come from a Delhi-specific rule set, with two tiers that exist only in Delhi (Family Court, Labour / Industrial Tribunal). The C-index is not comparable with the old classifier's Macro F1 of 0.59.
+
+## Cross-state experiment (Delhi, Odisha, Bihar)
+
+`scripts/experiments/cross_state.py` compares three setups on the same features (case type, court tier, four gender fields; district is excluded because district names are state-specific), with learning rate 0.10 and early stopping.
+
+| Evaluated on | In-state | Pooled (+ state feature) | Trained on the other two |
+|---|---|---|---|
+| Delhi | 0.726 | 0.726 | 0.584 |
+| Odisha | 0.710 | 0.710 | 0.558 |
+| Bihar | 0.755 | 0.755 | 0.583 |
+
+- Pooling did not improve any state, and a model trained on the other two states ranks cases only slightly better than chance (0.56-0.58). With these features, per-state models are needed.
+- Part of the hold-out gap reflects label mismatch (state-specific court-tier rules, tiers that exist only in Delhi, different case-type spellings), so it is not a clean measure of how different the states' courts are.
+- Dropping district lowers the in-state C-index by about 0.02-0.04 compared with the full-feature runs, so district carries real signal.
+- The pooled fits reached the 3,000-round cap, and all numbers come from a single train/test split.
