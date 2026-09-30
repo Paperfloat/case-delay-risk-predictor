@@ -519,3 +519,136 @@ stages:
       hash: md5
       md5: 90f46287c9c17a62c0e7cde71f5cc7c8
       size: 2770
+  features@delhi_survival:
+    cmd: python scripts/pipeline/features.py --state delhi_survival
+    deps:
+    - path: data/raw/cases/cases_2010_delhi.csv
+      hash: md5
+      md5: 3a7464dbba6c0aa92c8b924e46192b1c
+      size: 17160533
+    - path: data/raw/cases/cases_2011_delhi.csv
+      hash: md5
+      md5: 0af9d192c1cf3299dc1661615d748704
+      size: 18874597
+    - path: data/raw/cases/cases_2012_delhi.csv
+      hash: md5
+      md5: 1697f321739a82b18f0911b60393b936
+      size: 20714637
+    - path: data/raw/cases/cases_2013_delhi.csv
+      hash: md5
+      md5: 03ad81056e204cc2d1d48fb7f97c8086
+      size: 26636803
+    - path: data/raw/keys/cases_court_key.csv
+      hash: md5
+      md5: ed43671e6b397c52670a7ccd3b376f39
+      size: 4607163
+      isexec: true
+    - path: data/raw/keys/cases_district_key.csv
+      hash: md5
+      md5: f5d80133f98bd4ce1bbd34a805552f56
+      size: 46062
+      isexec: true
+    - path: data/raw/keys/disp_name_key.csv
+      hash: md5
+      md5: 78787dd1c567f64feac58b8b8f0932d4
+      size: 12324
+      isexec: true
+    - path: data/raw/keys/purpose_name_key.csv
+      hash: md5
+      md5: f48d795793f5e81b14ea2c352d2e16ff
+      size: 2715640
+      isexec: true
+    - path: data/raw/keys/type_name_key.csv
+      hash: md5
+      md5: 78717289679632599f85f1c91705edcf
+      size: 1862573
+      isexec: true
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/pipeline/features.py
+      hash: md5
+      md5: 9b4dc1f31f8ff4a6930567791a05d270
+      size: 4761
+    params:
+      config/states.yaml:
+        states.delhi_survival:
+          code: '26'
+          slug: delhi
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          tier_ruleset: delhi
+          cutoff: '2019-02-28'
+        years:
+        - 2010
+        - 2011
+        - 2012
+        - 2013
+    outs:
+    - path: data/processed/cases_2010_2013_delhi_survival_features.csv.gz
+      hash: md5
+      md5: dbfd3c9e6eae861f2035f33070ff48e3
+      size: 11697474
+  normalize@delhi_survival:
+    cmd: python scripts/pipeline/normalize.py --state delhi_survival
+    deps:
+    - path: data/processed/cases_2010_2013_delhi_survival_features.csv.gz
+      hash: md5
+      md5: dbfd3c9e6eae861f2035f33070ff48e3
+      size: 11697474
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/pipeline/normalize.py
+      hash: md5
+      md5: 007cdb686a027867634afb5d6d361c30
+      size: 3906
+    params:
+      config/states.yaml:
+        states.delhi_survival:
+          code: '26'
+          slug: delhi
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          tier_ruleset: delhi
+          cutoff: '2019-02-28'
+    outs:
+    - path: data/processed/cases_2010_2013_delhi_survival_normalized.csv.gz
+      hash: md5
+      md5: a3b86eb91d1cbd1913cf78486853e12c
+      size: 11790586
+  train_delhi_survival:
+    cmd: python scripts/train_survival.py --state delhi_survival
+    deps:
+    - path: data/processed/cases_2010_2013_delhi_survival_normalized.csv.gz
+      hash: md5
+      md5: a3b86eb91d1cbd1913cf78486853e12c
+      size: 11790586
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/train_survival.py
+      hash: md5
+      md5: f6b60ca2dde2ec130fbfab0bdfda4979
+      size: 4671
+    params:
+      config/states.yaml:
+        states.delhi_survival.cutoff: '2019-02-28'
+    outs:
+    - path: models/delhi_aft_2019-02-28.json
+      hash: md5
+      md5: 50c150ba335adbaaf88e102b9fb2eef5
+      size: 6207148
+    - path: models/delhi_aft_feature_columns.json
+      hash: md5
+      md5: fa3e7456706c3ac5d5a27f51af332488
+      size: 4068
+    - path: reports/delhi_survival_fairness_2019-02-28.csv
+      hash: md5
+      md5: 17b36dbc9afcd7e03fe2a7b159054cd2
+      size: 1471

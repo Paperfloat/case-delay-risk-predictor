@@ -19,6 +19,14 @@ states:
     top_case_types: 100
     tier_ruleset: bihar
     cutoff: "2019-05-31"
+  delhi_survival:
+    code: "26"
+    slug: delhi
+    keep_pending: true
+    normalize: true
+    top_case_types: 100
+    tier_ruleset: delhi
+    cutoff: "2019-02-28"
 
 validation:
   odisha:
@@ -27,3 +35,6 @@ validation:
   bihar:
     rows: [700000, 950000]
     decided_share: [0.38, 0.52]
+  delhi_survival:
+    rows: [400000, 520000]
+    decided_share: [0.85, 0.95]

@@ -66,7 +66,22 @@ def tier_of_bihar(name):
     return 'Other / unclear'
 
 
-RULES = {'bihar': tier_of_bihar}
+def tier_of_delhi(name):
+    t = clean(name).replace(' ', '')
+    if 'polc' in t or 'poit' in t:
+        return 'Labour / Industrial Tribunal'
+    if 'family' in t:
+        return 'Family Court'
+    if 'chiefmetropolitan' in t or 'metropolitanmagistrate' in t:
+        return 'Chief Judicial Magistrate'
+    if 'sess' in t or 'districtjudge' in t:
+        return 'District and Sessions Judge'
+    if 'seniorcivil' in t or 'civiljudge' in t:
+        return 'Civil Judge (Senior Division)'
+    return 'Other / unclear'
+
+
+RULES = {'bihar': tier_of_bihar, 'delhi': tier_of_delhi}
 rule = RULES.get(cfg.get('tier_ruleset'), tier_of)
 print("Court tier rule set:", cfg.get('tier_ruleset', 'base'))
 df['court_tier_raw'] = df['court_tier']

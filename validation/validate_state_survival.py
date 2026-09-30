@@ -29,7 +29,7 @@ TIERS = ["Chief Judicial Magistrate", "Sub-Divisional Judicial Magistrate",
          "Civil Judge (Senior Division)", "District and Sessions Judge",
          "Judicial Magistrate First Class", "Civil Judge cum JMFC", "Other / unclear",
          "Additional District / Sessions Judge", "Civil Judge cum SDJM",
-         "Civil Judge (Junior Division)", "Civil Judge (division unclear)"]
+         "Civil Judge (Junior Division)", "Civil Judge (division unclear)", "Family Court", "Labour / Industrial Tribunal"]
 
 results = []
 header = pd.read_csv(PATH, nrows=0).columns.tolist()
