@@ -16,3 +16,6 @@ mlflow.db
 mlruns/
 *.swp
 audit_log.db
+mlruns/
+models/orissa_aft_2020-12-31.json
+reports/orissa_survival_fairness_2020-12-31.csv

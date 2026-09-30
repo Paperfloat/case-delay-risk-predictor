@@ -451,3 +451,40 @@ stages:
       hash: md5
       md5: dd53c72794f3b2febbbd3d4660ccfed6
       size: 21227132
+  train_odisha:
+    cmd: python scripts/train_survival.py --state odisha
+    deps:
+    - path: data/processed/cases_2010_2013_orissa_survival_normalized.csv.gz
+      hash: md5
+      md5: 062e68f41e56b510e3e17ef77a0c6f38
+      size: 12218017
+    - path: scripts/pipeline/common.py
+      hash: md5
+      md5: ffea6a5893ec2c972dfa8b6e54053426
+      size: 1372
+    - path: scripts/train_survival.py
+      hash: md5
+      md5: f6b60ca2dde2ec130fbfab0bdfda4979
+      size: 4671
+    params:
+      config/states.yaml:
+        states.odisha:
+          code: '11'
+          slug: orissa
+          keep_pending: true
+          normalize: true
+          top_case_types: 100
+          cutoff: '2019-02-28'
+    outs:
+    - path: models/orissa_aft_2019-02-28.json
+      hash: md5
+      md5: 8f42de5611cdbdb9b5b90dccd15f5629
+      size: 7939373
+    - path: models/orissa_aft_feature_columns.json
+      hash: md5
+      md5: 67ea02d4af6d21c231af8ebe14da9a86
+      size: 4906
+    - path: reports/orissa_survival_fairness_2019-02-28.csv
+      hash: md5
+      md5: 3da71012db1fb9693f5d328a82537ebd
+      size: 2126

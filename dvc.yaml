@@ -1,3 +1,6 @@
+vars:
+  - config/states.yaml
+
 stages:
   load:
     foreach:
@@ -65,3 +68,18 @@ stages:
             - states.${key}
       outs:
         - data/processed/cases_2010_2013_${item.slug}${item.tag}_normalized.${item.ext}
+
+  train_odisha:
+    cmd: python scripts/train_survival.py --state odisha
+    deps:
+      - scripts/train_survival.py
+      - scripts/pipeline/common.py
+      - data/processed/cases_2010_2013_orissa_survival_normalized.csv.gz
+    params:
+      - config/states.yaml:
+          - states.odisha
+    outs:
+      - models/orissa_aft_${states.odisha.cutoff}.json
+      - models/orissa_aft_feature_columns.json
+      - reports/orissa_survival_fairness_${states.odisha.cutoff}.csv:
+          cache: false
