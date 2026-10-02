@@ -14,6 +14,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install DVC
+        run: pip install dvc
+
+      - name: Configure DVC remote credentials
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Pull the survival model files
+        run: dvc pull --force train_odisha train_bihar train_delhi_survival
+
       - name: Build Docker image
         run: docker build -f Dockerfile.api -t case-delay-api .
 
@@ -21,30 +38,26 @@ jobs:
         run: docker run -d -p 8000:8000 --name api-test case-delay-api
 
       - name: Wait for API to start
-        run: sleep 5
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/health && break
+            sleep 2
+          done
 
       - name: Health check
         run: curl -f http://localhost:8000/health
 
-      - name: Smoke test /predict
-        run: |
-          curl -f -X POST http://localhost:8000/predict \
-            -H "Content-Type: application/json" \
-            -d '{"type_name_normalized": "hma", "purpose_name_s": "misc", "court_tier": "Principal Judge Family Court", "district_name": "South West", "female_defendant": "0 male", "female_petitioner": "1 female"}'
+      - name: Smoke test all states
+        run: python3 scripts/smoke_test_api.py http://localhost:8000
+
       - name: Verify audit log write
         run: |
-          docker exec api-test python3 -c "
-          import sqlite3
-          conn = sqlite3.connect('audit_log.db')
-          count = conn.execute('SELECT COUNT(*) FROM predictions').fetchone()[0]
-          print(f'Rows in predictions table: {count}')
-          assert count >= 1, 'No prediction was logged to audit_log.db!'
-          conn.close()
-          "
+          docker exec api-test python3 -c "import sqlite3; c = sqlite3.connect('audit_log.db'); n = c.execute('SELECT COUNT(*) FROM survival_predictions').fetchone()[0]; print('rows logged:', n); assert n >= 3"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs api-test
 
       - name: Stop container
         if: always()
         run: docker stop api-test
-
-
-

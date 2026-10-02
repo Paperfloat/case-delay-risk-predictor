@@ -1,60 +1,60 @@
-dimension,group,n,censored,c_index
-court_tier,Civil Judge (Senior Division),7065,0.602,0.6549
-court_tier,Civil Judge (division unclear),5213,0.542,0.7318
-court_tier,Chief Judicial Magistrate,77483,0.634,0.7408
-court_tier,Other / unclear,2613,0.601,0.7736
-court_tier,District and Sessions Judge,29998,0.349,0.8509
-district_name,Araria,3184,0.534,0.6391
-district_name,Vaishali,2228,0.961,0.6405
-district_name,Kishanganj,1079,0.492,0.6421
-district_name,Begusarai,4150,0.38,0.6489
-district_name,Khagaria,1997,0.569,0.6504
-district_name,Supaul,2147,0.659,0.664
-district_name,Sitamarhi,2311,0.652,0.6643
-district_name,Purnea,4735,0.392,0.6747
-district_name,Gaya,2709,0.965,0.686
-district_name,Madhubani,4502,0.463,0.6878
-district_name,Madhepura,1812,0.511,0.6895
-district_name,Buxar,2866,0.518,0.6909
-district_name,Motihari,3645,0.675,0.6954
-district_name,Lakhisarai,1365,0.701,0.6977
-district_name,Banka,1867,0.657,0.7021
-district_name,Darbhanga,5560,0.403,0.7057
-district_name,Rohtas Sasaram,4274,0.502,0.7118
-district_name,Gopalganj,4342,0.523,0.7121
-district_name,Aurangabad,1905,0.202,0.7215
-district_name,Kaimur at Bhabhua,3383,0.356,0.7228
-district_name,Munger,2271,0.546,0.7263
-district_name,Siwan,4189,0.704,0.7332
-district_name,Bettiah,4221,0.697,0.7341
-district_name,Nalanda,3265,0.811,0.7386
-district_name,Samastipur,6334,0.464,0.7397
-district_name,Jamui,2248,0.619,0.7416
-district_name,Bhagalpur,2744,0.799,0.7529
-district_name,Saharsa,2285,0.712,0.755
-district_name,Muzaffarpur,4147,0.944,0.758
-district_name,Katihar,4736,0.426,0.7705
-district_name,Saran at Chapra,3821,0.237,0.797
-district_name,Bhojpur,2144,0.958,0.8007
-district_name,Patna,17230,0.47,0.8282
-type_name_normalized,gr/police cases,1181,0.665,0.5301
-type_name_normalized,regular bail,2138,0.071,0.5706
-type_name_normalized,gr police cases,2026,0.53,0.5783
-type_name_normalized,general register,1194,0.735,0.5882
-type_name_normalized,reg cri case,1887,0.64,0.6152
-type_name_normalized,anticipatory bail,4117,0.0,0.6193
-type_name_normalized,indian penal code (ipc),3700,0.696,0.6297
-type_name_normalized,title appeal,1043,0.645,0.6636
-type_name_normalized,maintainance,1550,0.111,0.6639
-type_name_normalized,session case,6854,0.623,0.6642
-type_name_normalized,cri rev app,1139,0.15,0.6698
-type_name_normalized,cr case,3370,0.671,0.671
-type_name_normalized,matrimonial case,1443,0.105,0.6759
-type_name_normalized,title suit,7817,0.599,0.6802
-type_name_normalized,criminal case,1570,0.584,0.6834
-type_name_normalized,cr case complaint (p),18909,0.543,0.6851
-type_name_normalized,gr,2571,0.678,0.7143
-type_name_normalized,cri case,26701,0.738,0.7662
-type_name_normalized,cr case complaint (o),1630,0.663,0.7702
-type_name_normalized,gr case,7432,0.618,0.7825
-type_name_normalized,other,3177,0.571,0.811
+dimension,group,n,censored,c_index,ci_low,ci_high
+court_tier,Civil Judge (Senior Division),7065,0.602,0.6584,0.6481,0.6675
+court_tier,Civil Judge (division unclear),5213,0.542,0.7363,0.7281,0.7448
+court_tier,Chief Judicial Magistrate,77483,0.634,0.7433,0.7406,0.7469
+court_tier,Other / unclear,2613,0.601,0.7737,0.7599,0.7888
+court_tier,District and Sessions Judge,29998,0.349,0.852,0.8501,0.8546
+district_name,Vaishali,2228,0.961,0.6164,0.5296,0.6877
+district_name,Araria,3184,0.534,0.6466,0.6361,0.6619
+district_name,Kishanganj,1079,0.492,0.6482,0.6234,0.6811
+district_name,Begusarai,4150,0.38,0.6503,0.6363,0.6642
+district_name,Khagaria,1997,0.569,0.6545,0.631,0.6759
+district_name,Sitamarhi,2311,0.652,0.6665,0.6521,0.6823
+district_name,Supaul,2147,0.659,0.6712,0.6539,0.6873
+district_name,Purnea,4735,0.392,0.6788,0.6691,0.6873
+district_name,Madhubani,4502,0.463,0.691,0.6809,0.7031
+district_name,Lakhisarai,1365,0.701,0.6941,0.6702,0.7155
+district_name,Madhepura,1812,0.511,0.6944,0.6772,0.7093
+district_name,Gaya,2709,0.965,0.6955,0.639,0.7461
+district_name,Buxar,2866,0.518,0.6994,0.6862,0.7136
+district_name,Motihari,3645,0.675,0.7011,0.6851,0.7175
+district_name,Banka,1867,0.657,0.7035,0.6844,0.7261
+district_name,Rohtas Sasaram,4274,0.502,0.7126,0.7042,0.7234
+district_name,Darbhanga,5560,0.403,0.7152,0.7069,0.7242
+district_name,Gopalganj,4342,0.523,0.7185,0.7064,0.7298
+district_name,Kaimur at Bhabhua,3383,0.356,0.7227,0.7135,0.7375
+district_name,Aurangabad,1905,0.202,0.7269,0.7138,0.7434
+district_name,Munger,2271,0.546,0.7313,0.7159,0.7452
+district_name,Bettiah,4221,0.697,0.7353,0.7206,0.7543
+district_name,Siwan,4189,0.704,0.7374,0.7209,0.7529
+district_name,Nalanda,3265,0.811,0.7375,0.7218,0.7539
+district_name,Samastipur,6334,0.464,0.7419,0.7326,0.7504
+district_name,Jamui,2248,0.619,0.7453,0.7253,0.7643
+district_name,Saharsa,2285,0.712,0.7578,0.7423,0.7803
+district_name,Muzaffarpur,4147,0.944,0.76,0.7259,0.7888
+district_name,Bhagalpur,2744,0.799,0.7618,0.7452,0.7797
+district_name,Katihar,4736,0.426,0.7733,0.7636,0.7831
+district_name,Saran at Chapra,3821,0.237,0.7974,0.7887,0.8056
+district_name,Bhojpur,2144,0.958,0.8055,0.7416,0.8478
+district_name,Patna,17230,0.47,0.8278,0.8243,0.8319
+type_name_normalized,gr/police cases,1181,0.665,0.5296,0.5053,0.5559
+type_name_normalized,regular bail,2138,0.071,0.5699,0.5571,0.5804
+type_name_normalized,gr police cases,2026,0.53,0.5787,0.5617,0.5965
+type_name_normalized,general register,1194,0.735,0.5959,0.5706,0.63
+type_name_normalized,anticipatory bail,4117,0.0,0.6147,0.604,0.6234
+type_name_normalized,reg cri case,1887,0.64,0.622,0.6011,0.6443
+type_name_normalized,indian penal code (ipc),3700,0.696,0.6299,0.6137,0.649
+type_name_normalized,maintainance,1550,0.111,0.6682,0.6539,0.6844
+type_name_normalized,session case,6854,0.623,0.6703,0.6613,0.6787
+type_name_normalized,title appeal,1043,0.645,0.6722,0.65,0.6965
+type_name_normalized,cr case,3370,0.671,0.6726,0.6579,0.6843
+type_name_normalized,cri rev app,1139,0.15,0.678,0.6618,0.6957
+type_name_normalized,matrimonial case,1443,0.105,0.6799,0.6629,0.6965
+type_name_normalized,title suit,7817,0.599,0.6843,0.676,0.6941
+type_name_normalized,criminal case,1570,0.584,0.685,0.664,0.7034
+type_name_normalized,cr case complaint (p),18909,0.543,0.6882,0.6834,0.693
+type_name_normalized,gr,2571,0.678,0.7154,0.7,0.7309
+type_name_normalized,cri case,26701,0.738,0.7675,0.7632,0.7728
+type_name_normalized,cr case complaint (o),1630,0.663,0.7797,0.7636,0.795
+type_name_normalized,gr case,7432,0.618,0.7873,0.7805,0.7927
+type_name_normalized,other,3177,0.571,0.8205,0.8102,0.8297
