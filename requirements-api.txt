@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-xgboost
+xgboost==3.4.1
 shap
 pandas
 joblib

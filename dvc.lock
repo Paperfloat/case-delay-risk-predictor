@@ -273,8 +273,8 @@ stages:
       size: 1372
     - path: scripts/pipeline/normalize.py
       hash: md5
-      md5: cf923c726531004af937d6eb4444fa95
-      size: 3363
+      md5: 007cdb686a027867634afb5d6d361c30
+      size: 3906
     params:
       config/states.yaml:
         states.odisha:
@@ -287,7 +287,7 @@ stages:
     outs:
     - path: data/processed/cases_2010_2013_orissa_survival_normalized.csv.gz
       hash: md5
-      md5: 062e68f41e56b510e3e17ef77a0c6f38
+      md5: d77d50b822a9d5726081f6d31a760dfe
       size: 12218017
   load@bihar:
     cmd: python scripts/pipeline/load.py --state bihar
@@ -435,8 +435,8 @@ stages:
       size: 1372
     - path: scripts/pipeline/normalize.py
       hash: md5
-      md5: cf923c726531004af937d6eb4444fa95
-      size: 3363
+      md5: 007cdb686a027867634afb5d6d361c30
+      size: 3906
     params:
       config/states.yaml:
         states.bihar:
@@ -449,14 +449,14 @@ stages:
     outs:
     - path: data/processed/cases_2010_2013_bihar_survival_normalized.csv.gz
       hash: md5
-      md5: dd53c72794f3b2febbbd3d4660ccfed6
+      md5: 92a8bea9fd43330467a680a93e4e944c
       size: 21227132
   train_odisha:
     cmd: python scripts/train_survival.py --state odisha
     deps:
     - path: data/processed/cases_2010_2013_orissa_survival_normalized.csv.gz
       hash: md5
-      md5: 062e68f41e56b510e3e17ef77a0c6f38
+      md5: d77d50b822a9d5726081f6d31a760dfe
       size: 12218017
     - path: scripts/pipeline/common.py
       hash: md5
@@ -464,8 +464,8 @@ stages:
       size: 1372
     - path: scripts/train_survival.py
       hash: md5
-      md5: f6b60ca2dde2ec130fbfab0bdfda4979
-      size: 4671
+      md5: 1090a67a9b75a5090923d96d3bcd2e17
+      size: 7566
     params:
       config/states.yaml:
         states.odisha:
@@ -478,22 +478,26 @@ stages:
     outs:
     - path: models/orissa_aft_2019-02-28.json
       hash: md5
-      md5: 8f42de5611cdbdb9b5b90dccd15f5629
-      size: 7939373
+      md5: e1b2ff80189a83286b6a56b7b43d0c31
+      size: 8061361
     - path: models/orissa_aft_feature_columns.json
       hash: md5
       md5: 67ea02d4af6d21c231af8ebe14da9a86
       size: 4906
+    - path: models/orissa_aft_meta.json
+      hash: md5
+      md5: 63513075fc17db90df1edabfcd739c50
+      size: 758
     - path: reports/orissa_survival_fairness_2019-02-28.csv
       hash: md5
-      md5: 3da71012db1fb9693f5d328a82537ebd
-      size: 2126
+      md5: bab8e48786fc77425b432a9d58faf6c2
+      size: 2783
   train_bihar:
     cmd: python scripts/train_survival.py --state bihar
     deps:
     - path: data/processed/cases_2010_2013_bihar_survival_normalized.csv.gz
       hash: md5
-      md5: dd53c72794f3b2febbbd3d4660ccfed6
+      md5: 92a8bea9fd43330467a680a93e4e944c
       size: 21227132
     - path: scripts/pipeline/common.py
       hash: md5
@@ -501,24 +505,28 @@ stages:
       size: 1372
     - path: scripts/train_survival.py
       hash: md5
-      md5: f6b60ca2dde2ec130fbfab0bdfda4979
-      size: 4671
+      md5: 1090a67a9b75a5090923d96d3bcd2e17
+      size: 7566
     params:
       config/states.yaml:
         states.bihar.cutoff: '2019-05-31'
     outs:
     - path: models/bihar_aft_2019-05-31.json
       hash: md5
-      md5: ffe7dacb61c7abdcd95c624c58f52ed8
-      size: 7307862
+      md5: 3610c78c89d7e31351eb3e4d5a0f7d2e
+      size: 8191959
     - path: models/bihar_aft_feature_columns.json
       hash: md5
       md5: a7c7cfb004e2a40ec9bdd09758c570f1
       size: 5614
+    - path: models/bihar_aft_meta.json
+      hash: md5
+      md5: 40a375f197ca50b82b174b5b4b90f713
+      size: 753
     - path: reports/bihar_survival_fairness_2019-05-31.csv
       hash: md5
-      md5: 90f46287c9c17a62c0e7cde71f5cc7c8
-      size: 2770
+      md5: 87950888a1cf521605e9ab51df004012
+      size: 3596
   features@delhi_survival:
     cmd: python scripts/pipeline/features.py --state delhi_survival
     deps:
@@ -634,21 +642,25 @@ stages:
       size: 1372
     - path: scripts/train_survival.py
       hash: md5
-      md5: f6b60ca2dde2ec130fbfab0bdfda4979
-      size: 4671
+      md5: 1090a67a9b75a5090923d96d3bcd2e17
+      size: 7566
     params:
       config/states.yaml:
         states.delhi_survival.cutoff: '2019-02-28'
     outs:
     - path: models/delhi_aft_2019-02-28.json
       hash: md5
-      md5: 50c150ba335adbaaf88e102b9fb2eef5
-      size: 6207148
+      md5: 89b734757343bbaa4175a9c41ba7cfc0
+      size: 4748718
     - path: models/delhi_aft_feature_columns.json
       hash: md5
       md5: fa3e7456706c3ac5d5a27f51af332488
       size: 4068
+    - path: models/delhi_aft_meta.json
+      hash: md5
+      md5: 38ac378810abfbf6311cd6f679fd7ae3
+      size: 760
     - path: reports/delhi_survival_fairness_2019-02-28.csv
       hash: md5
-      md5: 17b36dbc9afcd7e03fe2a7b159054cd2
-      size: 1471
+      md5: 69294c17188299ed9f983ed101223cae
+      size: 1926

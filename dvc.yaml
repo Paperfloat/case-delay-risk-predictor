@@ -83,6 +83,7 @@ stages:
     outs:
       - models/orissa_aft_${states.odisha.cutoff}.json
       - models/orissa_aft_feature_columns.json
+      - models/orissa_aft_meta.json
       - reports/orissa_survival_fairness_${states.odisha.cutoff}.csv:
           cache: false
 
@@ -98,6 +99,7 @@ stages:
     outs:
       - models/bihar_aft_${states.bihar.cutoff}.json
       - models/bihar_aft_feature_columns.json
+      - models/bihar_aft_meta.json
       - reports/bihar_survival_fairness_${states.bihar.cutoff}.csv:
           cache: false
 
@@ -113,5 +115,6 @@ stages:
     outs:
       - models/delhi_aft_${states.delhi_survival.cutoff}.json
       - models/delhi_aft_feature_columns.json
+      - models/delhi_aft_meta.json
       - reports/delhi_survival_fairness_${states.delhi_survival.cutoff}.csv:
           cache: false
