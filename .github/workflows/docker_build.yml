@@ -61,3 +61,67 @@ jobs:
       - name: Stop container
         if: always()
         run: docker stop api-test
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      RENDER_SERVICE_URL: ${{ secrets.RENDER_SERVICE_URL }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install DVC
+        run: pip install dvc
+
+      - name: Configure DVC remote credentials
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Pull the survival model files
+        run: dvc pull --force train_odisha train_bihar train_delhi_survival
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push image
+        run: |
+          IMAGE=ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/case-delay-api
+          docker build -f Dockerfile.api -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Trigger Render deploy
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
+        run: |
+          curl -fsS -G "$RENDER_DEPLOY_HOOK_URL" --data-urlencode "imgURL=${IMAGE}:${{ github.sha }}"
+          echo
+          sleep 90
+
+      - name: Wait for the live service
+        if: env.RENDER_SERVICE_URL != ''
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf --max-time 30 "$RENDER_SERVICE_URL/health" && exit 0
+            sleep 10
+          done
+          echo "Live service was not healthy after 10 minutes"
+          exit 1
+
+      - name: Smoke test the live service
+        if: env.RENDER_SERVICE_URL != ''
+        run: python3 scripts/smoke_test_api.py "$RENDER_SERVICE_URL"
