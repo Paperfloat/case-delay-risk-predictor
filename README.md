@@ -1,5 +1,120 @@
-# case-delay-risk-predictor
-A resource-planning tool that flags cases at risk of indefinite delay, built on public eCourts/NJDG data — with fairness and drift monitoring as first-class requirements, not afterthoughts.
+# Case Delay Risk Predictor
+
+Predicts how long an Indian court case will take to reach a decision, using only information known when the case is filed, for three states: **Delhi, Odisha and Bihar**. It is an end-to-end MLOps project: versioned data and models (DVC), config-driven pipelines, data validation, per-group fairness audits with confidence intervals, a multi-state API, Docker, and CI.
+
+The data is the public Development Data Lab (DDL) e-Courts dataset: about 1.75 million cases filed in 2010-2013. Cases with no recorded decision are treated as still pending at a data cutoff date (right-censored), so the model is a **survival model** (XGBoost AFT), not a classifier on decided cases only.
+
+## Results
+
+| State | Cases | Pending at cutoff | C-index, random split | C-index, time split (train 2010-12 filings, test 2013 filings) |
+|---|---|---|---|---|
+| Delhi | 459,712 | 10.4% | 0.751 | 0.731 |
+| Odisha | 470,869 | 39.2% | 0.748 | 0.727 |
+| Bihar | 816,809 | 55.8% | 0.799 | 0.803 |
+
+The C-index measures how well the model **ranks** cases by duration (0.5 is random, 1.0 is perfect). It is not comparable across states, because each state has a different censoring rate and case mix. The time-split column is the more realistic estimate, since the real task is predicting new filings from older ones.
+
+What the experiments showed:
+
+- **Model settings barely matter.** Training to convergence at a higher learning rate gained +0.002 to +0.005; tree depth and the AFT error scale added nothing further.
+- **States don't share a model.** A pooled model equals per-state models, and a model trained on two states ranks the third only slightly better than chance (C-index 0.56-0.58).
+- **Court workload looked like a win and wasn't.** Adding the number of filings in the same court in the prior 90 days raised the C-index by 0.010-0.019 on a random split, but lowered it by 0.005-0.019 on the time split in all three states. It was rejected (the training script keeps it behind an off-by-default `--workload` flag).
+- **Civil suits are the hardest to rank.** The Civil Judge (Senior Division) tier has the lowest C-index in all three states, with confidence intervals that don't overlap the best tier. See [docs/fairness_case_study.md](docs/fairness_case_study.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    RAW["DDL court records<br/>2010-2013 filings + key tables"] --> LOAD["load<br/>filter by state"]
+    LOAD --> FEAT["features<br/>key joins, dates, event flag"]
+    FEAT --> NORM["normalize<br/>court tiers, top-100 case types"]
+    CFG["config/states.yaml<br/>state codes, cutoffs,<br/>tier rules, validation bounds"] -.-> LOAD
+    CFG -.-> FEAT
+    CFG -.-> NORM
+    NORM --> VAL["Great Expectations<br/>14 checks per state, run in CI"]
+    NORM --> TRAIN["train<br/>XGBoost AFT, early stopping"]
+    TRAIN --> MODEL["model + metadata<br/>per state"]
+    TRAIN --> REPORT["fairness report<br/>C-index by group, 95% CIs"]
+    TRAIN --> MLF["MLflow run"]
+    MODEL --> API["FastAPI<br/>predict, options, states, health"]
+    API --> LOG[("SQLite audit log")]
+    API --> DOCKER["Docker image"]
+    DOCKER --> SMOKE["CI: build and smoke test<br/>all three states"]
+```
+
+Data, models and reports are versioned with DVC (remote on DagsHub). Every stage is defined once in `dvc.yaml` and runs per state from `config/states.yaml`, so adding a state is a config change plus a court-name check. See [docs/architecture.md](docs/architecture.md).
+
+## Quickstart
+
+Pull the processed datasets and models (needs DagsHub credentials in `.dvc/config.local`):
+
+```
+pip install -r requirements.txt
+dvc pull
+```
+
+Rebuilding from raw data also needs the DDL national case files and key tables downloaded into `data/raw/cases/` and `data/raw/keys/` (they are not stored in the DVC remote). Then:
+
+```
+dvc repro
+```
+
+Run the API locally, or in Docker (after `dvc pull`, because the image copies `models/`):
+
+```
+pip install -r requirements-api.txt
+uvicorn api.main:app --port 8000
+
+docker build -f Dockerfile.api -t case-delay-api .
+docker run -p 8000:8000 case-delay-api
+```
+
+Interactive docs are at `http://localhost:8000/docs`. `GET /options/{state}` lists the valid values for each input field. A request:
+
+```
+curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{
+  "state": "delhi",
+  "type_name_normalized": "hma",
+  "court_tier": "Family Court",
+  "district_name": "North West",
+  "female_defendant": "0 male",
+  "female_petitioner": "1 female",
+  "female_adv_def": "0 male",
+  "female_adv_pet": "0 male"
+}'
+```
+
+The response contains the predicted days, a Low/Medium/High tier, the top five contributing factors (TreeSHAP, on a log-days scale), the model version, and warnings for any input value the model has not seen. Every prediction is written to an audit table with its state and model version.
+
+## Repository layout
+
+```
+config/states.yaml          state codes, cutoffs, tier rules, validation bounds
+dvc.yaml, dvc.lock          pipeline: load, features, normalize, train (per state)
+scripts/pipeline/           pipeline steps and the cutoff estimator
+scripts/train_survival.py   training, bootstrap fairness audit, model metadata
+scripts/experiments/        tuning, cross-state and court-workload experiments
+validation/                 Great Expectations checks (one script, config-driven)
+api/main.py                 multi-state survival API; api/legacy_classifier.py is the v1 classifier API
+monitoring/                 drift and fairness dashboards for the v1 classifier
+reports/                    per-state fairness reports with confidence intervals
+.github/workflows/          data validation matrix, Docker build and smoke test
+docs/                       fairness case study, architecture, PRD v2 addendum, demo script
+```
+
+## Limitations
+
+- **Use the tier, not the day count.** The model is validated for ranking only. The predicted days have not been checked for calibration, and the Medium/High cut points for Odisha and Bihar lie at or beyond the longest duration the data can show (about 9 years), so they are extrapolations. Tiers are tertiles of predicted days within each state.
+- **Features are filing-time only.** Case type, court tier, district and four gender fields. Hearing history and the act or section of a case are not used, which caps accuracy.
+- **Pending status is an assumption.** Cases with no decision date are treated as pending at the cutoff. Their listing dates support this (over 99% have a next hearing date), but Bihar's pending share falls for newer filings, the opposite of what pure censoring predicts, and that is unexplained.
+- **Court tiers come from hand-written, per-state name rules,** so a tier name in one state is not exactly comparable to the same name in another.
+- **Per-group results are single-split estimates.** The confidence intervals resample cases independently, so they understate the uncertainty from cases clustering within courts.
+- **Monitoring covers the v1 classifier only.** Drift and fairness dashboards for the survival models are future work.
+
+---
+
+# Development log (chronological)
+]633;E;cat README_top.md;82d24239-f3d4-4c80-8d79-03d29aec86a2]633;CA resource-planning tool that flags cases at risk of indefinite delay, built on public eCourts/NJDG data — with fairness and drift monitoring as first-class requirements, not afterthoughts.
 ## Target Definition & Known Limitations
 - Target: days between date_of_filing and date_of_decision
 - v1 scope: only cases with a recorded decision date are used for training

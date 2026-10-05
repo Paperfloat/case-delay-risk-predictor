@@ -1,0 +1,56 @@
+dimension,group,n,macro_precision,macro_recall,macro_f1
+overall,all,90772,0.5659,0.5341,0.5065
+court_tier,Chief Judicial Magistrate,55036,0.5238,0.4954,0.469
+court_tier,District and Sessions Judge,25055,0.6203,0.5458,0.5321
+court_tier,Civil Judge (Senior Division),4977,0.5306,0.4369,0.3434
+court_tier,Civil Judge (division unclear),3698,0.5698,0.4953,0.4689
+court_tier,Other / unclear,1920,0.5769,0.523,0.5163
+district_name,Patna,13739,0.5755,0.4876,0.4581
+district_name,Samastipur,4871,0.5826,0.5,0.4218
+district_name,Darbhanga,4355,0.5251,0.401,0.3635
+district_name,Katihar,3792,0.5983,0.4959,0.4215
+district_name,Purnea,3816,0.4705,0.3998,0.3249
+district_name,Madhubani,3575,0.6016,0.4288,0.3047
+district_name,Gopalganj,3325,0.5544,0.4745,0.4388
+district_name,Rohtas Sasaram,3222,0.5265,0.4574,0.4414
+district_name,Bettiah,2806,0.5385,0.4913,0.4742
+district_name,Siwan,2813,0.5187,0.4548,0.4692
+district_name,Begusarai,3414,0.5133,0.4122,0.2983
+district_name,Muzaffarpur,2374,0.3121,0.3333,0.3224
+district_name,Saran at Chapra,3389,0.5605,0.397,0.3893
+district_name,Motihari,2567,0.5434,0.462,0.4678
+district_name,Kaimur at Bhabhua,2847,0.4926,0.4143,0.3294
+district_name,Nalanda,1999,0.5498,0.4211,0.3612
+district_name,Araria,2420,0.5549,0.4257,0.3417
+district_name,Buxar,2164,0.5348,0.4791,0.4309
+district_name,Bhagalpur,1718,0.6048,0.4443,0.3853
+district_name,Gaya,1397,0.4881,0.3415,0.3428
+district_name,Sitamarhi,1580,0.5232,0.4314,0.3809
+district_name,Saharsa,1618,0.5709,0.4933,0.4538
+district_name,Munger,1741,0.5415,0.4911,0.4337
+district_name,Jamui,1590,0.5502,0.4841,0.4552
+district_name,Vaishali,1234,0.3204,0.3333,0.3267
+district_name,Supaul,1451,0.4904,0.4494,0.4221
+district_name,Bhojpur,1200,0.6255,0.4545,0.5
+district_name,Khagaria,1457,0.623,0.4352,0.2644
+district_name,Aurangabad,1718,0.5174,0.3883,0.3844
+district_name,Banka,1294,0.5365,0.498,0.4696
+district_name,Madhepura,1392,0.5172,0.4784,0.4263
+type_name_normalized,cri case,17869,0.5922,0.4668,0.4032
+type_name_normalized,cr case complaint (p),14216,0.5166,0.4766,0.4548
+type_name_normalized,title suit,5431,0.5367,0.4426,0.3781
+type_name_normalized,gr case,5231,0.5688,0.5418,0.5261
+type_name_normalized,session case,5035,0.4891,0.4277,0.3464
+type_name_normalized,anticipatory bail,4117,0.3332,0.3333,0.3333
+type_name_normalized,indian penal code (ipc),2206,0.5374,0.4578,0.3676
+type_name_normalized,cr case,2454,0.5018,0.4142,0.2972
+type_name_normalized,other,2371,0.6045,0.5904,0.5455
+type_name_normalized,gr,1779,0.5595,0.4558,0.396
+type_name_normalized,regular bail,2109,0.312,0.3333,0.3223
+type_name_normalized,gr police cases,1509,0.4185,0.3604,0.1833
+type_name_normalized,reg cri case,1362,0.4936,0.4171,0.392
+type_name_normalized,cr case complaint (o),1265,0.585,0.5328,0.4931
+type_name_normalized,criminal case,1159,0.5495,0.4811,0.4195
+type_name_normalized,maintainance,1442,0.6557,0.4047,0.4214
+type_name_normalized,matrimonial case,1349,0.6948,0.4579,0.5005
+type_name_normalized,cri rev app,1026,0.5815,0.3504,0.3392
