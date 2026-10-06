@@ -38,7 +38,7 @@ This addendum records how the project differs from the original PRD-01 and the s
 
 ## Open items
 
-- Calibration check for the tiers and the predicted day counts (not done).
+- Calibration: done (`docs/calibration_check.md`). Tiers are correctly ordered in all three states, but predicted day counts are not calibrated and the High-tier days in Odisha and Bihar are extrapolations. Show the tier, not the day count.
 
 - The act or section of each case as a feature (needs a separate DDL download).
 - Explain Bihar's pending share falling for newer filings, and check districts with extreme pending shares (for example Vaishali, 96%).

@@ -140,7 +140,7 @@ Best-minus-worst subgroup Macro F1 (groups with at least 1,000 test cases): cour
 
 ## Limitations
 
-- **Use the tier, not the day count.** The model is validated for ranking only. The predicted days have not been checked for calibration, and the Medium/High cut points for Odisha and Bihar lie at or beyond the longest duration the data can show (about 9 years), so they are extrapolations. Tiers are tertiles of predicted days within each state.
+- **Use the tier, not the day count.** The model is validated for ranking only. The predicted days were checked against Kaplan-Meier medians and are not calibrated (the tier order is correct in all three states; see [docs/calibration_check.md](docs/calibration_check.md)), and the Medium/High cut points for Odisha and Bihar lie at or beyond the longest duration the data can show (about 9 years), so they are extrapolations. Tiers are tertiles of predicted days within each state.
 - **Features are filing-time only.** Case type, court tier, district and four gender fields. Hearing history and the act or section of a case are not used, which caps accuracy.
 - **Pending status is an assumption.** Cases with no decision date are treated as pending at the cutoff. Their listing dates support this (over 99% have a next hearing date), but Bihar's pending share falls for newer filings, the opposite of what pure censoring predicts, and that is unexplained.
 - **Court tiers come from hand-written, per-state name rules,** so a tier name in one state is not exactly comparable to the same name in another.
