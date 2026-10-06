@@ -1,0 +1,24 @@
+{
+  "state": "orissa",
+  "ref_max_year": 2011,
+  "case_type_psi": 0.1755,
+  "old_rows": 185771,
+  "newer_train_rows": 199568,
+  "newer_test_rows": 85530,
+  "results_on_held_out_newer_cases": {
+    "stale": {
+      "c_index": 0.7198,
+      "macro_precision": 0.5187,
+      "macro_recall": 0.506,
+      "macro_f1": 0.5099,
+      "train_seconds": 137
+    },
+    "retrained": {
+      "c_index": 0.7502,
+      "macro_precision": 0.5528,
+      "macro_recall": 0.5402,
+      "macro_f1": 0.5438,
+      "train_seconds": 237
+    }
+  }
+}
