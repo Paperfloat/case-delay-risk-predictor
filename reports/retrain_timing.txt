@@ -1,0 +1,12 @@
+=== train_delhi_survival
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+train_delhi_survival took 200.91 seconds
+=== train_odisha
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+train_odisha took 317.68 seconds
+=== train_bihar
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+train_bihar took 757.96 seconds
