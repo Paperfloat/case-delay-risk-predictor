@@ -4,6 +4,8 @@ Predicts how long an Indian court case will take to reach a decision, using only
 
 The data is the public Development Data Lab (DDL) e-Courts dataset: about 1.75 million cases filed in 2010-2013. Cases with no recorded decision are treated as still pending at a data cutoff date (right-censored), so the model is a **survival model** (XGBoost AFT), not a classifier on decided cases only.
 
+**Not a verdict:** this tool estimates how long a case is likely to take, for resource-planning purposes only; it does not predict how any case will be decided and must not be used to judge the merits of a case or the people involved.
+
 ## Results
 
 | State | Cases | Pending at cutoff | C-index, random split | C-index, time split (train 2010-12 filings, test 2013 filings) |
@@ -102,6 +104,32 @@ reports/                    per-state fairness reports with confidence intervals
 docs/                       fairness case study, architecture, PRD v2 addendum, demo script
 ```
 
+## Tier-level results and fairness
+
+The survival models predict days. To report precision, recall and Macro F1 (the PRD metrics), predicted days are turned into Low / Medium / High tertiles within each state and scored per subgroup on the held-out test split (`scripts/survival_tier_report.py --state <state> --auto`). Details and limits: [docs/survival_tier_evaluation.md](docs/survival_tier_evaluation.md).
+
+| State | Macro precision | Macro recall | Macro F1 | Cases scored |
+|---|---|---|---|---|
+| Delhi | 0.620 | 0.620 | 0.620 | 100% |
+| Odisha | 0.545 | 0.527 | 0.531 | 88% |
+| Bihar | 0.566 | 0.534 | 0.507 | 74% |
+
+Best-minus-worst subgroup Macro F1 (groups with at least 1,000 test cases): court tier 0.11-0.19, district 0.15-0.30, case type 0.24-0.36. **These are above the PRD target of 0.10, and no state reaches the 0.75 Macro F1 target.** Pending cases are scored only when they have already waited past the High cutoff, so Odisha and Bihar cover only the cases whose tier is known.
+
+## Monitoring, retraining and deployment
+
+**Drift and fairness monitoring.** `monitoring/survival_monitor.py` compares cases filed up to 2011 with later filings (PSI, threshold 0.10) and writes `monitoring/survival_dashboard.html`, per-state Evidently drift reports and `monitoring/survival_drift_status.json`. Current result: Delhi is stable (largest PSI 0.093); Odisha (0.175) and Bihar (0.170) drift on case type, so a retrain is triggered.
+
+**Automatic retrain.** `.github/workflows/retrain.yml` runs monthly and on demand. It runs the drift check, retrains only the drifted states, pushes the models to DagsHub and opens a pull request. Merging that pull request starts the deploy pipeline.
+
+**Simulated time-sliced retrain (Odisha).** A model trained on filings up to 2011 scored C-index 0.720 and Macro F1 0.510 on newer cases; after the drift trigger and a retrain it scored 0.750 and 0.544. One state, one seed, no no-drift control. See [docs/simulated_retrain.md](docs/simulated_retrain.md).
+
+**Retrain-to-deploy time (target: under 15 minutes).** Training took 3m 21s (Delhi), 5m 18s (Odisha) and 12m 38s (Bihar), plus 4m 44s for the build and deploy run. Delhi (8m 05s) and Odisha (10m 02s) meet the target; Bihar (17m 22s) does not. Only the training stage was timed. See [docs/retrain_benchmark.md](docs/retrain_benchmark.md).
+
+**Deployment.** CI builds the Docker image and smoke-tests all three states. On every push to `main`, a deploy job pushes the image to GitHub Container Registry, triggers Render, and smoke-tests the live service at https://case-delay-api.onrender.com (`/health` shows the loaded states). On Render's free plan the service sleeps when idle, so the first request can take about a minute.
+
+**Model registry.** `python scripts/register_models.py` registers the three survival models in a local MLflow Model Registry with the alias `champion` (view with `mlflow ui --backend-store-uri sqlite:///mlflow.db`).
+
 ## Limitations
 
 - **Use the tier, not the day count.** The model is validated for ranking only. The predicted days have not been checked for calibration, and the Medium/High cut points for Odisha and Bihar lie at or beyond the longest duration the data can show (about 9 years), so they are extrapolations. Tiers are tertiles of predicted days within each state.
@@ -109,7 +137,10 @@ docs/                       fairness case study, architecture, PRD v2 addendum, 
 - **Pending status is an assumption.** Cases with no decision date are treated as pending at the cutoff. Their listing dates support this (over 99% have a next hearing date), but Bihar's pending share falls for newer filings, the opposite of what pure censoring predicts, and that is unexplained.
 - **Court tiers come from hand-written, per-state name rules,** so a tier name in one state is not exactly comparable to the same name in another.
 - **Per-group results are single-split estimates.** The confidence intervals resample cases independently, so they understate the uncertainty from cases clustering within courts.
-- **Monitoring covers the v1 classifier only.** Drift and fairness dashboards for the survival models are future work.
+- **Monitoring is a snapshot comparison.** Drift compares early and later filings in one fixed dataset, so Odisha and Bihar flag drift on every run; a live system would compare training data with new cases. The fairness dashboard reports gaps but does not close them.
+- **Tier metrics miss the PRD targets.** Best overall Macro F1 is 0.62 (Delhi) against a 0.75 target, and subgroup gaps are above 0.10.
+- **Retrain-to-deploy misses 15 minutes for Bihar** (17m 22s), and only the training stage was timed.
+- **The live demo is limited by the free host.** The service sleeps when idle, and the audit log lives inside the container, so it resets on every deploy or restart.
 
 ---
 
@@ -355,7 +386,7 @@ a genuine dashboard artifact.
   - Absolute predicted durations are not calibrated; use the model for ranking cases.
   - Pending rate differs strongly by district (about 5% in Gajapati to about 66% in Jharsuguda) and is flat across filing years. It is unclear whether this reflects real backlog or district-level recording differences.
   - Mass-disposal dates (e.g. 2014-12-06, 2015-12-12) cluster many decisions on single days.
-  - Delhi uses a classifier with pending rows dropped; the two states are not yet on one modeling approach.
+  - Delhi now also has a survival model (below); its original classifier, which drops pending rows, stays as the v1 baseline.
   - Case-type spelling variants are still split across categories (e.g. `uc` and `uc case`, `gr` and `gr case`), which dilutes the per-type audit. Per-group C-index also depends on each group's censoring rate, so gaps are not a direct fairness measure.
 
 ## Bihar (state code 08): survival model
