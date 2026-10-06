@@ -13,10 +13,18 @@ flowchart LR
     TRAIN --> MODEL["model + metadata<br/>per state"]
     TRAIN --> REPORT["fairness report<br/>C-index by group, 95% CIs"]
     TRAIN --> MLF["MLflow run"]
+    MODEL --> REG["MLflow Model Registry<br/>alias champion"]
+    MODEL --> TIERS["tier metrics<br/>precision, recall, Macro F1"]
+    NORM --> MON["survival_monitor.py<br/>PSI drift + fairness dashboard"]
+    MON --> TRIG["retrain.yml<br/>monthly or on demand"]
+    TRIG -.->|"retrain drifted states, open pull request"| TRAIN
     MODEL --> API["FastAPI<br/>predict, options, states, health"]
     API --> LOG[("SQLite audit log")]
     API --> DOCKER["Docker image"]
     DOCKER --> SMOKE["CI: build and smoke test<br/>all three states"]
+    SMOKE -->|"push to main"| GHCR["GitHub Container Registry"]
+    GHCR --> RENDER["Render, free plan<br/>live API"]
+    RENDER --> LIVE["CD: smoke test<br/>the live service"]
 ```
 
 ## Pipeline stages (`dvc.yaml`)
@@ -44,3 +52,19 @@ The cutoff for each state is estimated from the data (`scripts/pipeline/estimate
 
 - **Data validation:** one job per dataset (a matrix), each pulling only the file it validates from the DVC remote and running the Great Expectations checks.
 - **Docker build and smoke test:** pulls the model files, builds the image, starts the container, and sends a valid request for each state, checking the response and the audit log write.
+- **Deploy (push to `main` only):** after the smoke test passes, the image is pushed to GitHub Container Registry, Render is triggered through a deploy hook, and the live service is smoke-tested.
+- **Drift check and retrain (monthly and on demand):** see Monitoring and retraining below.
+
+## Monitoring and retraining
+
+`monitoring/survival_monitor.py` compares cases filed up to 2011 (reference) with later filings (current) for each state. It computes PSI per model feature with a threshold of 0.10, and writes `monitoring/survival_dashboard.html` (overall scores, fairness gaps, weakest subgroups), per-state Evidently drift reports and `monitoring/survival_drift_status.json`. The fairness numbers come from `scripts/survival_tier_report.py`, which turns predicted days into Low / Medium / High (tertiles within each state) and scores precision, recall and Macro F1 per subgroup.
+
+`.github/workflows/retrain.yml` runs the drift check monthly and on demand. It retrains only the states that drifted (`dvc repro -f -s <stage>`), pushes the models to DagsHub and opens a pull request. Merging that pull request starts the deploy pipeline. The drift comparison uses a fixed 2010-2013 snapshot, so Odisha and Bihar flag drift on every run; a live system would compare training data with new cases. `scripts/simulate_retrain.py` runs a time-sliced simulation for one state (see `docs/simulated_retrain.md`), and `docs/retrain_benchmark.md` records the retrain-to-deploy timings.
+
+## Model registry
+
+`scripts/register_models.py` registers each state's saved model in a local MLflow Model Registry (`sqlite:///mlflow.db`, not committed) as `case-delay-aft-<state>` with the alias `champion`. It does not retrain.
+
+## Deployment
+
+The API runs on Render's free plan from the image `ghcr.io/<owner>/case-delay-api` (a public package). The free service sleeps when idle, so the first request can take about a minute, and the SQLite audit log lives inside the container, so it resets on every deploy or restart.
