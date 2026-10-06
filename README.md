@@ -38,10 +38,18 @@ flowchart LR
     TRAIN --> MODEL["model + metadata<br/>per state"]
     TRAIN --> REPORT["fairness report<br/>C-index by group, 95% CIs"]
     TRAIN --> MLF["MLflow run"]
+    MODEL --> REG["MLflow Model Registry<br/>alias champion"]
+    MODEL --> TIERS["tier metrics<br/>precision, recall, Macro F1"]
+    NORM --> MON["survival_monitor.py<br/>PSI drift + fairness dashboard"]
+    MON --> TRIG["retrain.yml<br/>monthly or on demand"]
+    TRIG -.->|"retrain drifted states, open pull request"| TRAIN
     MODEL --> API["FastAPI<br/>predict, options, states, health"]
     API --> LOG[("SQLite audit log")]
     API --> DOCKER["Docker image"]
     DOCKER --> SMOKE["CI: build and smoke test<br/>all three states"]
+    SMOKE -->|"push to main"| GHCR["GitHub Container Registry"]
+    GHCR --> RENDER["Render, free plan<br/>live API"]
+    RENDER --> LIVE["CD: smoke test<br/>the live service"]
 ```
 
 Data, models and reports are versioned with DVC (remote on DagsHub). Every stage is defined once in `dvc.yaml` and runs per state from `config/states.yaml`, so adding a state is a config change plus a court-name check. See [docs/architecture.md](docs/architecture.md).
