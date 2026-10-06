@@ -1,0 +1,95 @@
+name: Drift check and automatic retrain
+
+on:
+  schedule:
+    - cron: "0 3 1 * *"   # 03:00 UTC on the 1st of every month
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Retrain all three states even if no drift is found"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  drift-and-retrain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install dvc pandas numpy xgboost lifelines scikit-learn pyyaml
+
+      - name: Configure DVC remote credentials
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Pull the normalized data
+        run: dvc pull --force normalize@odisha normalize@bihar normalize@delhi_survival
+
+      - name: Run the drift check
+        run: python monitoring/survival_monitor.py --no-evidently
+
+      - name: Decide which states to retrain
+        id: decide
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          python - << 'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          m = {"delhi": ("train_delhi_survival", "delhi_survival"),
+               "orissa": ("train_odisha", "odisha"),
+               "bihar": ("train_bihar", "bihar")}
+          s = json.load(open("monitoring/survival_drift_status.json"))
+          force = os.environ.get("FORCE") == "true"
+          pick = [k for k, v in s.items() if v["retrain"] or force]
+          print("any=" + ("true" if pick else "false"))
+          print("stages=" + " ".join(m[k][0] for k in pick))
+          print("states=" + " ".join(m[k][1] for k in pick))
+          PY
+
+      - name: Show the decision
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat monitoring/survival_drift_status.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "Retrain stages: '${{ steps.decide.outputs.stages }}'"
+
+      - name: Retrain the drifted states
+        if: steps.decide.outputs.any == 'true'
+        run: |
+          for s in ${{ steps.decide.outputs.stages }}; do dvc repro -f -s $s; done
+          for st in ${{ steps.decide.outputs.states }}; do python scripts/survival_tier_report.py --state $st --auto; done
+          dvc push ${{ steps.decide.outputs.stages }}
+
+      - name: Open a pull request with the new models
+        if: steps.decide.outputs.any == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing changed - no pull request needed"
+            exit 0
+          fi
+          BR="retrain-$(date +%Y%m%d-%H%M)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add dvc.lock reports monitoring/survival_drift_status.json monitoring/survival_dashboard.html
+          git commit -m "Automatic retrain: ${{ steps.decide.outputs.states }}"
+          git push origin "$BR"
+          gh pr create --base main --head "$BR" \
+            --title "Automatic retrain: ${{ steps.decide.outputs.states }}" \
+            --body "Drift was detected, so these states were retrained: ${{ steps.decide.outputs.states }}. New model files are pushed to DagsHub. Review the metrics in reports/, then merge to deploy."
