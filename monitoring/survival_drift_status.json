@@ -1,0 +1,30 @@
+{
+  "delhi": {
+    "retrain": false,
+    "drifted_features": [],
+    "max_psi": 0.0929,
+    "threshold": 0.1,
+    "reference_rows": 198757,
+    "current_rows": 260955
+  },
+  "orissa": {
+    "retrain": true,
+    "drifted_features": [
+      "type_name_normalized"
+    ],
+    "max_psi": 0.1755,
+    "threshold": 0.1,
+    "reference_rows": 185771,
+    "current_rows": 285098
+  },
+  "bihar": {
+    "retrain": true,
+    "drifted_features": [
+      "type_name_normalized"
+    ],
+    "max_psi": 0.1703,
+    "threshold": 0.1,
+    "reference_rows": 312568,
+    "current_rows": 504241
+  }
+}
