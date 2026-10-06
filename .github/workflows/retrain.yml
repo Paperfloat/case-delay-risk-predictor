@@ -36,8 +36,8 @@ jobs:
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
 
-      - name: Pull the normalized data
-        run: dvc pull --force normalize@odisha normalize@bihar normalize@delhi_survival
+      - name: Pull the normalized data and current models
+        run: dvc pull --force normalize@odisha normalize@bihar normalize@delhi_survival train_odisha train_bihar train_delhi_survival
 
       - name: Run the drift check
         run: python monitoring/survival_monitor.py --no-evidently
