@@ -1,0 +1,51 @@
+{
+  "state": "delhi",
+  "alpha": 0.5,
+  "noise_std_f1_gap": {
+    "court_tier": 0.006208521708626482,
+    "district_name": 0.01001306828683999,
+    "type_name_normalized": 0.00799932104921109
+  },
+  "results": {
+    "baseline": {
+      "c_index": 0.7508233645311758,
+      "macro_f1": 0.6207390795057985,
+      "f1gap_court_tier": 0.17103323496886874,
+      "cgap_court_tier": 0.1497288578521615,
+      "f1gap_district_name": 0.14992900379031449,
+      "cgap_district_name": 0.1400429076360733,
+      "f1gap_type_name_normalized": 0.2480783978173619,
+      "cgap_type_name_normalized": 0.1389407956294756
+    },
+    "reweight_court_tier": {
+      "c_index": 0.7506537565459643,
+      "macro_f1": 0.6195296460817392,
+      "f1gap_court_tier": 0.17056084987778697,
+      "cgap_court_tier": 0.14968693601327265,
+      "f1gap_district_name": 0.16027744259105164,
+      "cgap_district_name": 0.13927092832957755,
+      "f1gap_type_name_normalized": 0.24705696123891074,
+      "cgap_type_name_normalized": 0.13759619551823343
+    },
+    "reweight_district_name": {
+      "c_index": 0.7506495123861899,
+      "macro_f1": 0.6199440319747438,
+      "f1gap_court_tier": 0.1734550040642182,
+      "cgap_court_tier": 0.14868852425153334,
+      "f1gap_district_name": 0.16169000535869832,
+      "cgap_district_name": 0.13689733588948572,
+      "f1gap_type_name_normalized": 0.26273388704352835,
+      "cgap_type_name_normalized": 0.13672037182037367
+    },
+    "reweight_type_name_normalized": {
+      "c_index": 0.7506165453392641,
+      "macro_f1": 0.6204589464608491,
+      "f1gap_court_tier": 0.17003221179175476,
+      "cgap_court_tier": 0.1492800829508919,
+      "f1gap_district_name": 0.15021761827252422,
+      "cgap_district_name": 0.1412975035788817,
+      "f1gap_type_name_normalized": 0.2562577504881914,
+      "cgap_type_name_normalized": 0.1375837592742618
+    }
+  }
+}
