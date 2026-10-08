@@ -1,0 +1,42 @@
+{
+  "state": "delhi",
+  "with_act_info_share": 0.487,
+  "random_split": {
+    "baseline": 0.7508,
+    "with_acts": 0.7779,
+    "diff": 0.0271,
+    "ci_low": 0.026,
+    "ci_high": 0.0282,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.7524,
+        0.81
+      ],
+      "without_act_info": [
+        0.7082,
+        0.7106
+      ]
+    },
+    "test_rows": 68957
+  },
+  "time_split": {
+    "baseline": 0.7304,
+    "with_acts": 0.7632,
+    "diff": 0.0328,
+    "ci_low": 0.0319,
+    "ci_high": 0.0337,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.7414,
+        0.8019
+      ],
+      "without_act_info": [
+        0.6703,
+        0.674
+      ]
+    },
+    "test_rows": 146659
+  }
+}
