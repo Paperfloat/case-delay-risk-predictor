@@ -1,14 +1,32 @@
 import json
+import os
+import sys
 import requests
 import streamlit as st
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import labels
+
 st.set_page_config(page_title="Nyaya Lens", page_icon="⚖️", layout="wide")
 
-with open("models/feature_columns.json") as f:
-    FEATURE_COLUMNS = json.load(f)
+API_URL = os.environ.get("NYAYA_API_URL", "http://localhost:8000").rstrip("/")
+API_TIMEOUT = 120  # the free hosted API can take about a minute to wake up
 
-def extract_options(prefix):
-    return sorted(col[len(prefix) + 1:] for col in FEATURE_COLUMNS if col.startswith(prefix + "_"))
+
+@st.cache_data(ttl=300, show_spinner=False)
+def api_get(path):
+    r = requests.get(f"{API_URL}{path}", timeout=API_TIMEOUT)
+    r.raise_for_status()
+    return r.json()
+
+
+STATE_LABELS = {"delhi": "Delhi", "odisha": "Odisha", "bihar": "Bihar"}
+FIELD_LABELS = {"type_name_normalized": "Case Type", "court_tier": "Court Tier", "district_name": "District",
+                "female_defendant": "Defendant", "female_petitioner": "Petitioner",
+                "female_adv_def": "Defendant's advocate", "female_adv_pet": "Petitioner's advocate"}
+GENDER_FIELDS = ["female_defendant", "female_petitioner", "female_adv_def", "female_adv_pet"]
+FIELD_LABELS.update({"female_defendant": "Defendant: gender", "female_petitioner": "Petitioner: gender",
+                     "female_adv_def": "Defendant's lawyer: gender", "female_adv_pet": "Petitioner's lawyer: gender"})
 
 CASE_TYPE_LABELS = {
     "arbtn": "Arbitration", "arbtn cases": "Arbitration Cases", "arb": "Arbitration",
@@ -88,17 +106,16 @@ PURPOSE_LABELS = {
 }
 
 def humanize_case_type(code):
-    return CASE_TYPE_LABELS.get(code, code.title())
+    state = st.session_state.get("state", "delhi")
+    if state == "delhi":
+        return CASE_TYPE_LABELS.get(code) or labels.case_type_label("delhi", code)
+    return labels.case_type_label(state, code)
 
 def humanize_purpose(code):
     return PURPOSE_LABELS.get(code, code.title())
 
 def humanize_gender_field(code):
-    return {
-        "0 male": "Male", "1 female": "Female",
-        "-9998 unclear": "Unclear / not classified",
-        "-9999 missing name": "Missing name in record",
-    }.get(code, code)
+    return labels.gender_label(code)
 
 def humanize_feature_name(raw_name):
     prefixes = [
@@ -108,6 +125,10 @@ def humanize_feature_name(raw_name):
         ("district_name_", "District", lambda x: x),
         ("female_defendant_", "Defendant", humanize_gender_field),
         ("female_petitioner_", "Petitioner", humanize_gender_field),
+        ("female_adv_def_", "Defendant's advocate", humanize_gender_field),
+        ("female_adv_pet_", "Petitioner's advocate", humanize_gender_field),
+        ("primary_act_", "Act", lambda x: x),
+        ("primary_section_", "Section", lambda x: x),
     ]
     for prefix, label, fn in prefixes:
         if raw_name.startswith(prefix):
@@ -227,7 +248,7 @@ st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
             <div style="font-family:'Lora',serif; font-weight:600; color:#EFEDE4; font-size:30px; line-height:1.2;">Nyaya Lens</div>
-            <p style="color:#B8BFC7 !important; margin:4px 0 0 0; font-size:14px;">Case delay risk assessment for Delhi district courts</p>
+            <p style="color:#B8BFC7 !important; margin:4px 0 0 0; font-size:14px;">Case delay risk assessment for Delhi, Odisha and Bihar district courts</p>
         </div>
         <div style="color:#8FBF9F; font-family:'IBM Plex Mono',monospace; font-size:13px;">
             &#9679; Model Ready
@@ -236,11 +257,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-type_options = extract_options("type_name_normalized")
-purpose_options = extract_options("purpose_name_s")
-court_tier_options = extract_options("court_tier")
-district_options = extract_options("district_name")
-gender_options = extract_options("female_defendant")
+try:
+    states_info = api_get("/states")
+except Exception:
+    st.error(f"Could not reach the API at {API_URL}. Start it locally with: uvicorn api.main:app --port 8000 "
+             "(or set NYAYA_API_URL to the hosted API; the free hosted API can take about a minute to wake up).")
+    st.stop()
 
 col1, col2 = st.columns([1, 1.3], gap="large")
 
@@ -248,9 +270,8 @@ with col1:
     st.markdown("""
     <h2 style="font-size:26px; line-height:1.3;">Know delay risk<br><em>before it happens.</em></h2>
     <p style="color:#4A4536; font-size:15px; line-height:1.6; max-width:34ch;">
-    Trained on real Delhi district court records, this model reads only what's known
-    the moment a case is filed — case type, court, district — with no case-progress
-    data used, so it's a genuine early-warning signal, not hindsight.
+    Trained on public court records from Delhi, Odisha and Bihar, this model reads only what is known
+    the moment a case is filed, with no case-progress data used, so it is an early signal and not hindsight.
     </p>
     """, unsafe_allow_html=True)
 
@@ -262,37 +283,54 @@ with col1:
         </div>
         <div style="padding:10px 0; border-top:1px solid #D8D3C4;">
             <strong>Every prediction explained</strong><br>
-            <span style="color:#6B6558; font-size:14px;">SHAP factors show exactly what drove each result</span>
+            <span style="color:#6B6558; font-size:14px;">SHAP factors show what pushed the result</span>
         </div>
         <div style="padding:10px 0; border-top:1px solid #D8D3C4; border-bottom:1px solid #D8D3C4;">
             <strong>Fairness-audited</strong><br>
-            <span style="color:#6B6558; font-size:14px;">Checked across case type, court tier, and district</span>
+            <span style="color:#6B6558; font-size:14px;">Accuracy gaps between groups are measured and published, including where they are large</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown('<div class="panel"><div class="panel-title">Case Particulars</div>', unsafe_allow_html=True)
-    type_name = st.selectbox("Case Type", type_options, format_func=humanize_case_type)
-    purpose_name = st.selectbox("Purpose of Hearing", purpose_options, format_func=humanize_purpose)
-    court_tier = st.selectbox("Court Tier", court_tier_options)
-    district = st.selectbox("District", district_options)
-    female_defendant = st.selectbox("Defendant", gender_options, format_func=humanize_gender_field)
-    female_petitioner = st.selectbox("Petitioner", gender_options, format_func=humanize_gender_field)
+    state = st.selectbox("State", [k for k in STATE_LABELS if k in states_info],
+                         format_func=lambda k: STATE_LABELS[k], key="state")
+    opts = api_get(f"/options/{state}")
+
+    def case_label(code):
+        return humanize_case_type(code)
+
+    formats = {"type_name_normalized": case_label}
+    for g in GENDER_FIELDS:
+        formats[g] = humanize_gender_field
+    values = {}
+    for field, choices in opts["fields"].items():
+        values[field] = st.selectbox(FIELD_LABELS.get(field, field), choices,
+                                     format_func=formats.get(field, str), key=f"{state}_{field}")
+
+    chosen = {}
+    optional = opts.get("optional_fields") or {}
+    if optional:
+        with st.expander("Optional: act and section (more accurate when both are known)"):
+            for f, label in [("primary_act", "Primary act"), ("primary_section", "Primary section")]:
+                v = st.selectbox(label, ["(not specified)"] + optional[f], key=f"{state}_{f}")
+                if v != "(not specified)":
+                    chosen[f] = v
+        if len(chosen) == 1:
+            st.warning("Choose both the act and the section, or neither. With only one, the standard model is used.")
     predict_clicked = st.button("Assess Delay Risk", use_container_width=True)
 
     if predict_clicked:
-        payload = {
-            "type_name_normalized": type_name, "purpose_name_s": purpose_name,
-            "court_tier": court_tier, "district_name": district,
-            "female_defendant": female_defendant, "female_petitioner": female_petitioner,
-        }
+        payload = {"state": state, **values}
+        if len(chosen) == 2:
+            payload.update(chosen)
         try:
-            response = requests.post("http://localhost:8000/predict", json=payload, timeout=10)
+            with st.spinner("Asking the model (the hosted API can take about a minute to wake up)..."):
+                response = requests.post(f"{API_URL}/predict", json=payload, timeout=API_TIMEOUT)
             response.raise_for_status()
             result = response.json()
             tier = result["risk_tier"]
-            confidence = result["confidence"]
 
             stamp_colors = {"Low": "#4A6B4E", "Medium": "#B08D57", "High": "#A44A3F"}
             color = stamp_colors[tier]
@@ -300,10 +338,17 @@ with col2:
                 f'<div class="stamp" style="color:{color}; border-color:{color};">{tier.upper()} RISK</div>',
                 unsafe_allow_html=True,
             )
-            st.write(f"Model confidence: **{confidence:.1%}**")
+            st.write("The tier ranks this case among the state's cases: Low is the third the model expects to "
+                     "finish fastest, High the third it expects to take longest.")
+            st.caption(f"Model: {result['model_version']} ({result['model_variant']}). {result['tier_basis']}.")
+            for w in result["warnings"]:
+                st.warning(w)
+            with st.expander("Predicted days (not calibrated, use the tier)"):
+                st.write(f"{result['expected_days']:.0f} days")
+                st.caption(result["note"])
 
             st.markdown("**Contributing factors**")
-            st.caption("Positive pushes toward this tier, negative pushes away")
+            st.caption("Positive makes the expected duration longer, negative makes it shorter (log-days scale)")
             for factor in result["top_contributing_factors"]:
                 label, value = humanize_feature_name(factor["feature"])
                 sign = "+" if factor["shap_value"] > 0 else ""
@@ -313,15 +358,17 @@ with col2:
                     unsafe_allow_html=True,
                 )
         except requests.exceptions.ConnectionError:
-            st.error("Could not connect to the API. Start it with: uvicorn api.main:app --port 8000")
+            st.error(f"Could not connect to the API at {API_URL}.")
         except Exception as e:
             st.error(f"Error: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown(
-    '<p class="disclaimer">Case type labels matched to verified legal terms where possible; '
-    'codes marked "unconfirmed" are court-clerk shorthand without an official public source. '
-    'Trained on Delhi district court records, 2010-2013.</p>',
+    '<p class="disclaimer"><strong>Not a verdict:</strong> this tool estimates how long a case is likely to take, '
+    'for resource-planning purposes only. It does not predict how any case will be decided. '
+    'Trained on public e-Courts (Development Data Lab) records for cases filed 2010-2013 in Delhi, Odisha and Bihar. '
+    'Case type labels are matched to legal terms for Delhi only; codes marked "unconfirmed" are court-clerk '
+    'shorthand without an official public source. Gender fields are inferred from names in the court records and can be wrong.</p>',
     unsafe_allow_html=True,
 )
