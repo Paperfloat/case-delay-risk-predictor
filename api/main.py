@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sqlite3
 from datetime import datetime, timezone
 from typing import Optional
@@ -18,8 +19,9 @@ CATS = ["type_name_normalized", "court_tier", "district_name", "female_defendant
 WORKLOAD = "court_filings_90d"
 DB_PATH = "audit_log.db"
 NOTE = ("expected_days is the survival model's predicted time to disposition. The model was validated "
-        "for ranking cases (C-index); the day counts have not been checked for calibration, so use the "
-        "tier for planning. Tiers are tertiles of predicted days among the state's held-out test cases.")
+        "for ranking cases (C-index); the day counts were compared with observed durations and are not "
+        "calibrated, so use the tier for planning. Tiers are tertiles of predicted days among the held-out "
+        "test cases of the model that scored the case.")
 
 
 def options_from(columns):
@@ -46,6 +48,24 @@ for state, slug in SLUGS.items():
                      "options": options_from(columns), "workload": WORKLOAD in columns}
 if not MODELS:
     raise RuntimeError("no survival models found in models/")
+
+ACT_FIELDS = ["primary_act", "primary_section"]
+ACT_MODELS = {}  # optional act-aware model, Delhi only (needs both an act and a section)
+_act_meta = "models/delhi_acts_aft_meta.json"
+if os.path.exists(_act_meta):
+    _m = json.load(open(_act_meta))
+    _b = xgb.Booster()
+    _b.load_model(f"models/{_m['model_file']}")
+    _cols = json.load(open(f"models/{_m['columns_file']}"))
+    _opts = {f: [] for f in CATS + ACT_FIELDS}
+    for _col in _cols:
+        for _f in CATS + ACT_FIELDS:
+            if _col.startswith(_f + "_"):
+                _opts[_f].append(_col[len(_f) + 1:])
+                break
+    ACT_MODELS["delhi"] = {"meta": _m, "booster": _b, "columns": _cols, "options": _opts, "workload": False}
+else:
+    print("NOTE: no act-aware Delhi model found; primary_act / primary_section will be ignored")
 
 
 def init_db():
@@ -78,6 +98,8 @@ class CaseInput(BaseModel):
     female_petitioner: str
     female_adv_def: str
     female_adv_pet: str
+    primary_act: Optional[str] = None  # optional, Delhi only; needs primary_section as well
+    primary_section: Optional[str] = None
     court_filings_90d: Optional[int] = None  # only used by models trained with the workload feature
 
 
@@ -87,11 +109,29 @@ def predict(case: CaseInput):
     if state not in MODELS:
         raise HTTPException(status_code=404, detail=f"Unknown state '{case.state}'. Available: {sorted(MODELS)}")
     m = MODELS[state]
+    extra = []
+    act_vals = {}
+    given = [f for f in ACT_FIELDS if getattr(case, f)]
+    if given:
+        if state not in ACT_MODELS:
+            extra.append("primary_act / primary_section ignored: there is no act-aware model for this state")
+        elif len(given) < 2:
+            extra.append("both primary_act and primary_section are needed for the act-aware model; it was not used")
+        else:
+            m = ACT_MODELS[state]
+            for f in ACT_FIELDS:
+                v = re.sub(r"\s+", " ", getattr(case, f).strip().lower())
+                if v not in m["options"][f]:
+                    extra.append(f"'{v}' is not among the common {f} values; scored as 'other'")
+                    v = "other"
+                act_vals[f] = v
     row = {c: getattr(case, c) for c in CATS}
+    row.update(act_vals)
     enc = pd.get_dummies(pd.DataFrame([row]), dtype="uint8").reindex(columns=m["columns"], fill_value=0)
     enc = enc.astype("float32")
     warnings = [f"'{v}' is not a known {f} value for {state}; it was treated as unseen"
                 for f, v in row.items() if v not in m["options"][f]]
+    warnings.extend(extra)
     if m["workload"]:
         if case.court_filings_90d is None:
             warnings.append("court_filings_90d not supplied; the model treats it as missing")
@@ -116,6 +156,8 @@ def predict(case: CaseInput):
         "top_contributing_factors": factors,
         "explanation_scale": "log of days; positive values push the expected duration longer",
         "model_version": m["meta"]["model_version"],
+        "model_variant": "act-aware" if act_vals else "base",
+        "tier_basis": m["meta"]["tier_thresholds"]["basis"],
         "warnings": warnings,
         "note": NOTE,
     }
@@ -150,5 +192,7 @@ def options(state: str):
     state = state.lower()
     if state not in MODELS:
         raise HTTPException(status_code=404, detail=f"Unknown state '{state}'. Available: {sorted(MODELS)}")
+    optional = ({f: ACT_MODELS[state]["options"][f] for f in ACT_FIELDS} if state in ACT_MODELS else {})
     return {"state": state, "fields": MODELS[state]["options"],
+            "optional_fields": optional,
             "uses_court_filings_90d": MODELS[state]["workload"]}

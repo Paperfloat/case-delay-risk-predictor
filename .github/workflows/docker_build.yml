@@ -29,7 +29,7 @@ jobs:
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Pull the survival model files
-        run: dvc pull --force train_odisha train_bihar train_delhi_survival
+        run: dvc pull --force train_odisha train_bihar train_delhi_survival train_delhi_acts
 
       - name: Build Docker image
         run: docker build -f Dockerfile.api -t case-delay-api .
@@ -92,7 +92,7 @@ jobs:
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Pull the survival model files
-        run: dvc pull --force train_odisha train_bihar train_delhi_survival
+        run: dvc pull --force train_odisha train_bihar train_delhi_survival train_delhi_acts
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin

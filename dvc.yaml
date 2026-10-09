@@ -118,3 +118,16 @@ stages:
       - models/delhi_aft_meta.json
       - reports/delhi_survival_fairness_${states.delhi_survival.cutoff}.csv:
           cache: false
+
+  train_delhi_acts:
+    cmd: python scripts/train_delhi_acts.py
+    deps:
+      - scripts/train_delhi_acts.py
+      - scripts/pipeline/common.py
+      - data/processed/cases_2010_2013_delhi_survival_normalized.csv.gz
+      - data/processed/acts_case_level.csv.gz
+      - models/delhi_aft_meta.json
+    outs:
+      - models/delhi_acts_aft_${states.delhi_survival.cutoff}.json
+      - models/delhi_acts_aft_feature_columns.json
+      - models/delhi_acts_aft_meta.json
