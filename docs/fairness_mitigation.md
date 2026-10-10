@@ -25,3 +25,5 @@ fix: the gaps are probably caused by groups that are harder to predict from fili
 **Limits.** One weighting scheme (exponent 0.5). One train/test split per state. The noise measure covers test-case
 resampling only, not variation from retraining. Not tried: separate models per group, per-group tier thresholds,
 interaction features, or collecting more features. The mitigated models were not saved.
+
+**Note:** gaps here can differ from the tier report by up to about 0.01 (for example Delhi case type 0.248 here against 0.240) because this script derives predicted tiers from tertiles of its own predictions and the tier report uses the saved thresholds.

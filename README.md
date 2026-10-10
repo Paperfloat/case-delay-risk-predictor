@@ -10,17 +10,20 @@ The data is the public Development Data Lab (DDL) e-Courts dataset: about 1.75 m
 
 | State | Cases | Pending at cutoff | C-index, random split | C-index, time split (train 2010-12 filings, test 2013 filings) |
 |---|---|---|---|---|
-| Delhi | 459,712 | 10.4% | 0.751 | 0.731 |
-| Odisha | 470,869 | 39.2% | 0.748 | 0.727 |
-| Bihar | 816,809 | 55.8% | 0.799 | 0.803 |
+| Delhi | 459,712 | 10.4% | 0.7508 | 0.7304 |
+| Odisha | 470,869 | 39.2% | 0.7490 | 0.7275 |
+| Bihar | 816,809 | 55.8% | 0.7969 | 0.8008 |
+
+Time-split values were re-measured after the case-type spelling cleanup, with the same model settings (baseline of `scripts/acts_experiment.py`).
 
 The C-index measures how well the model **ranks** cases by duration (0.5 is random, 1.0 is perfect). It is not comparable across states, because each state has a different censoring rate and case mix. The time-split column is the more realistic estimate, since the real task is predicting new filings from older ones.
 
 What the experiments showed:
 
 - **Model settings barely matter.** Training to convergence at a higher learning rate gained +0.002 to +0.005; tree depth and the AFT error scale added nothing further.
-- **States don't share a model.** A pooled model equals per-state models, and a model trained on two states ranks the third only slightly better than chance (C-index 0.56-0.58).
+- **States don't share a model.** A pooled model with a `state` input matches the per-state models to four decimals only because trees can split on state first. Without that input it loses 0.001 to 0.007, but court tiers and case-type labels differ by state, so the features still reveal the state. The informative test is the hold-out: a model trained on the other two states scores 0.51-0.60, with Odisha at chance. See [docs/cross_state_check.md](docs/cross_state_check.md).
 - **Court workload looked like a win and wasn't.** Adding the number of filings in the same court in the prior 90 days raised the C-index by 0.010-0.019 on a random split, but lowered it by 0.005-0.019 on the time split in all three states. It was rejected (the training script keeps it behind an off-by-default `--workload` flag).
+- **The act and section help in Delhi, not reliably elsewhere.** On Delhi cases with both an act and a section, adding them raised the time-split C-index from 0.7461 to 0.7891 (+0.043). In the same clean test Odisha gained 0.010 and Bihar lost 0.015 on the time split. Whether a case has act information depends on its outcome in these records, so the API uses the optional Delhi model only when both fields are supplied ([docs/acts_sections_experiment.md](docs/acts_sections_experiment.md)).
 - **Civil suits are the hardest to rank.** The Civil Judge (Senior Division) tier has the lowest C-index in all three states, with confidence intervals that don't overlap the best tier. See [docs/fairness_case_study.md](docs/fairness_case_study.md).
 
 ## Architecture
@@ -118,15 +121,15 @@ The survival models predict days. To report precision, recall and Macro F1 (the 
 
 | State | Macro precision | Macro recall | Macro F1 | Cases scored |
 |---|---|---|---|---|
-| Delhi | 0.620 | 0.620 | 0.620 | 100% |
-| Odisha | 0.545 | 0.527 | 0.531 | 88% |
-| Bihar | 0.566 | 0.534 | 0.507 | 74% |
+| Delhi | 0.621 | 0.621 | 0.621 | 100% |
+| Odisha | 0.542 | 0.524 | 0.528 | 88% |
+| Bihar | 0.565 | 0.534 | 0.506 | 74% |
 
-Best-minus-worst subgroup Macro F1 (groups with at least 1,000 test cases): court tier 0.11-0.19, district 0.15-0.30, case type 0.24-0.36. **These are above the PRD target of 0.10, and no state reaches the 0.75 Macro F1 target.** Pending cases are scored only when they have already waited past the High cutoff, so Odisha and Bihar cover only the cases whose tier is known.
+Best-minus-worst subgroup Macro F1 (groups with at least 1,000 test cases): court tier 0.093-0.185, district 0.150-0.295, case type 0.170-0.418. **Eight of the nine gaps are above the PRD target of 0.10 (Odisha's court-tier gap, 0.093, is within about half a noise unit of it), and no state reaches the 0.75 Macro F1 target.** Pending cases are scored only when they have already waited past the High cutoff, so Odisha and Bihar cover only the cases whose tier is known.
 
 ## Monitoring, retraining and deployment
 
-**Drift and fairness monitoring.** `monitoring/survival_monitor.py` compares cases filed up to 2011 with later filings (PSI, threshold 0.10) and writes `monitoring/survival_dashboard.html`, per-state Evidently drift reports and `monitoring/survival_drift_status.json`. Current result: Delhi is stable (largest PSI 0.093); Odisha (0.175) and Bihar (0.170) drift on case type, so a retrain is triggered.
+**Drift and fairness monitoring.** `monitoring/survival_monitor.py` compares cases filed up to 2011 with later filings (PSI, threshold 0.10) and writes `monitoring/survival_dashboard.html`, per-state Evidently drift reports and `monitoring/survival_drift_status.json`. Current result: Delhi is stable (largest PSI 0.091); Odisha (0.169) and Bihar (0.177) drift on case type, so a retrain is triggered.
 
 **Automatic retrain.** `.github/workflows/retrain.yml` runs monthly and on demand. It runs the drift check, retrains only the drifted states, pushes the models to DagsHub and opens a pull request. Merging that pull request starts the deploy pipeline.
 
@@ -138,15 +141,31 @@ Best-minus-worst subgroup Macro F1 (groups with at least 1,000 test cases): cour
 
 **Model registry.** `python scripts/register_models.py` registers the three survival models in a local MLflow Model Registry with the alias `champion` (view with `mlflow ui --backend-store-uri sqlite:///mlflow.db`).
 
+## Further checks
+
+**Calibration.** The tier order is correct in all three states: the share of cases decided within 1, 2, 3 and 5 years falls from Low to Medium to High. Predicted day counts are not calibrated (they differ from observed medians by roughly 15-28%, and High-tier days in Odisha and Bihar are extrapolations). Use the tier. See [docs/calibration_check.md](docs/calibration_check.md).
+
+**Fairness mitigation.** Reweighting training cases by court tier, district or case type changed no gap beyond noise in 27 comparisons. See [docs/fairness_mitigation.md](docs/fairness_mitigation.md).
+
+**Act and section (optional Delhi model).** Delhi only, used when a request supplies both fields; see [docs/acts_sections_experiment.md](docs/acts_sections_experiment.md) and the architecture notes.
+
+**Pending share.** In Odisha and Bihar, decisions made before about 2013 look largely unrecorded, which would explain why older filings look more pending. This is not proven. See [docs/bihar_pending_investigation.md](docs/bihar_pending_investigation.md).
+
+**Frontend.** `frontend/app.py` is a Streamlit app that reads the API address from `NYAYA_API_URL` (default `http://localhost:8000`), lists valid values from `/options/<state>`, shows the tier first and the day count in a collapsed section, and uses plain-English labels from `frontend/labels.py`. It is not part of the Docker image or CI.
+
 ## Limitations
 
 - **Use the tier, not the day count.** The model is validated for ranking only. The predicted days were checked against Kaplan-Meier medians and are not calibrated (the tier order is correct in all three states; see [docs/calibration_check.md](docs/calibration_check.md)), and the Medium/High cut points for Odisha and Bihar lie at or beyond the longest duration the data can show (about 9 years), so they are extrapolations. Tiers are tertiles of predicted days within each state.
-- **Features are filing-time only.** Case type, court tier, district and four gender fields. Hearing history and the act or section of a case are not used, which caps accuracy.
-- **Pending status is an assumption.** Cases with no decision date are treated as pending at the cutoff. Their listing dates support this (over 99% have a next hearing date), but Bihar's pending share falls for newer filings, the opposite of what pure censoring predicts, and that is unexplained.
+- **Features are filing-time only.** Case type, court tier, district and four gender fields (gender is inferred from names in the court records). Hearing history is not used. The act and section of a case are used only by an optional Delhi model, and only when both are supplied.
+- **Pending status is an assumption.** Cases with no decision date are treated as pending at the cutoff. Their listing dates support this (over 99% have a next hearing date). In Odisha and Bihar newer filings have a lower pending share, the opposite of what pure censoring predicts; decisions made before about 2013 look largely unrecorded there, so durations for older filings may be biased long (not proven; see docs/bihar_pending_investigation.md).
 - **Court tiers come from hand-written, per-state name rules,** so a tier name in one state is not exactly comparable to the same name in another.
 - **Per-group results are single-split estimates.** The confidence intervals resample cases independently, so they understate the uncertainty from cases clustering within courts.
 - **Monitoring is a snapshot comparison.** Drift compares early and later filings in one fixed dataset, so Odisha and Bihar flag drift on every run; a live system would compare training data with new cases. The fairness dashboard reports gaps but does not close them.
-- **Tier metrics miss the PRD targets.** Best overall Macro F1 is 0.62 (Delhi) against a 0.75 target, and subgroup gaps are above 0.10.
+- **Tier metrics miss the PRD targets.** Best overall Macro F1 is 0.62 (Delhi) against a 0.75 target, and eight of the nine subgroup gaps are above 0.10 (Odisha's court tier, 0.093, is within noise of the target).
+- **Fairness mitigation did not help.** Reweighting by court tier, district or case type changed no gap beyond noise; other approaches were not tried.
+- **Predicted day counts are not calibrated.** The tier order is right, but predicted days differ from observed medians by roughly 15-28%, and High-tier days in Odisha and Bihar are extrapolations.
+- **The act and section model is Delhi-only and optional.** It is not in the monthly retrain workflow, the drift monitor or the model registry, and the frontend lists act and section as stored in the records.
+- **Early decisions look missing in Odisha and Bihar.** Durations for 2010-2012 filings may be biased long (not tested); see docs/bihar_pending_investigation.md.
 - **Retrain-to-deploy misses 15 minutes for Bihar** (17m 22s), and only the training stage was timed.
 - **The live demo is limited by the free host.** The service sleeps when idle, and the audit log lives inside the container, so it resets on every deploy or restart.
 
@@ -387,51 +406,54 @@ a genuine dashboard artifact.
 
 - **Data:** DDL 2010-2013 filings, 470,869 cases, 181,131 (38.5%) with no decision date.
 - **Censoring:** cases with no decision date are treated as still pending at the data cutoff. Checked: 99.7% have last and next listing dates, and only 0.5% were last listed more than 3 years before the cutoff, so they look actively pending rather than stale.
-- **Cutoff:** 2019-02-28, taken from where monthly decision volume drops (1,620 to 235). Sensitivity: 2020-12-31 gives C-index 0.7400 vs 0.7435.
+- **Cutoff:** 2019-02-28, taken from where monthly decision volume drops (1,620 to 235). Sensitivity (measured with the earlier training settings): 2020-12-31 gave C-index 0.7400 vs 0.7435.
 - **Model:** XGBoost AFT (`survival:aft`, normal, scale 1.2), filing-time features only (case type, court tier, district, litigant/advocate gender fields).
-- **Result:** test C-index 0.7435 (2019-02-28 cutoff). Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.104 (Judicial Magistrate First Class 0.786 vs Civil Judge Senior Division 0.682), district 0.131 (Nabarangpur 0.791 vs Kendrapada 0.661), case type 0.131 (2(a)cc 0.714 vs mac case 0.583). C-index is not comparable to the Delhi Macro F1 (different target and metric).
+- **Result:** test C-index 0.7490 (random split) and 0.7275 on the time split (train 2010-12 filings, test 2013 filings). Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.099 (Judicial Magistrate First Class 0.788 vs Civil Judge (Senior Division) 0.689), district 0.136 (Nabarangpur 0.803 vs Kendrapada 0.667), case type 0.116 (other 0.731 vs mac case 0.615). On Low/Medium/High tiers (tertiles within the state) Macro F1 is 0.528 overall (see Tier-level results). The C-index is not comparable across states or with the Delhi v1 classifier's Macro F1.
 - **Limitations:**
   - Absolute predicted durations are not calibrated; use the model for ranking cases.
   - Pending rate differs strongly by district (about 5% in Gajapati to about 66% in Jharsuguda) and is flat across filing years. It is unclear whether this reflects real backlog or district-level recording differences.
   - Mass-disposal dates (e.g. 2014-12-06, 2015-12-12) cluster many decisions on single days.
   - Delhi now also has a survival model (below); its original classifier, which drops pending rows, stays as the v1 baseline.
-  - Case-type spelling variants are still split across categories (e.g. `uc` and `uc case`, `gr` and `gr case`), which dilutes the per-type audit. Per-group C-index also depends on each group's censoring rate, so gaps are not a direct fairness measure.
+  - Case-type spelling variants are now merged before the top-100 selection (for example `uc` with `uc case`). Per-group C-index also depends on each group's censoring rate, so gaps are not a direct fairness measure.
 
 ## Bihar (state code 08): survival model
 
 - **Data:** DDL 2010-2013 filings, 816,809 cases, 54.5% with no decision date (61.3% of 2010 filings falling to 50.4% of 2013 filings).
 - **Censoring:** cases with no decision date are treated as still pending at the cutoff. Checked: 99.3% of pending cases have a next listing date, and only 0.9% were last listed more than 3 years before the cutoff.
 - **Cutoff:** 2019-05-31, estimated as the end of the month of the 90th percentile of pending cases' last listing date. The same rule gives 2019-02-28 for Odisha, matching the value found from its decision-volume drop.
-- **Model:** XGBoost AFT, same setup and filing-time features as Odisha. It reached the 1,500-round cap without early stopping, so it is not fully converged.
-- **Result:** test C-index 0.7963. Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.196 (District and Sessions Judge 0.851 vs Civil Judge Senior Division 0.655), district 0.189 (Patna 0.828 vs Araria 0.639), case type 0.281 (other 0.811 vs gr/police cases 0.530).
+- **Model:** XGBoost AFT, same setup and filing-time features as Odisha (learning rate 0.10, early stopping; best iteration 1553).
+- **Result:** test C-index 0.7969 (random split) and 0.8008 on the time split (train 2010-12 filings, test 2013 filings). Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.194 (District and Sessions Judge 0.853 vs Civil Judge (Senior Division) 0.659), district 0.211 (Patna 0.828 vs Vaishali 0.617), case type 0.273 (other 0.842 vs regular bail 0.569). On Low/Medium/High tiers (tertiles within the state) Macro F1 is 0.506 overall (see Tier-level results). The C-index is not comparable across states or with the Delhi v1 classifier's Macro F1.
 - **Limitations:**
-  - The pending share falls for newer filing years, the opposite of what pure right-censoring predicts. The listing checks say the pending cases are active, but this pattern is unexplained.
+  - The pending share falls for newer filing years, the opposite of what pure right-censoring predicts. Early decisions look largely unrecorded in Odisha and Bihar (see docs/bihar_pending_investigation.md; not proven). Vaishali is 94% pending and Gaya 97%, so districts like these are unreliable.
   - Court-tier names are matched by a Bihar-specific rule set. `Civil Judge (division unclear)` merges senior and junior civil courts (4.2% of cases), 2.2% of cases stay unclassified (e.g. `Criminal Proceeding`, `JJPDJ`), and 63% of cases fall in Chief Judicial Magistrate courts.
   - The C-index depends on each state's censoring rate and case mix, so it is not comparable across states or with the Delhi Macro F1. Part of Bihar's headline value comes from separating court tiers.
 
 ### Training-length experiment (Odisha, Bihar)
 
-Both DVC training stages use learning rate 0.05 with a 1,500-round cap and reach the cap without early stopping. A separate sweep (`scripts/experiments/tune_survival.py`) found that training to convergence at learning rate 0.10 gives test C-index 0.7484 on Odisha (+0.005) and 0.7985 on Bihar (+0.002). On Odisha, tree depth 8 and AFT scale 0.8 or 2.0 added nothing further (all within 0.001 on validation). The stages were left at the original setting because the gain is small.
+The DVC training stages use learning rate 0.10 with early stopping (best iteration 1531 for Odisha, 1553 for Bihar, 1113 for Delhi). An earlier sweep (`scripts/experiments/tune_survival.py`) found that training to convergence at learning rate 0.10 beat learning rate 0.05 with a 1,500-round cap by +0.005 on Odisha and +0.002 on Bihar; on Odisha, tree depth 8 and AFT scale 0.8 or 2.0 added nothing further (all within 0.001 on validation).
 
 ## Delhi (state code 26): survival mode
 
 - **Data:** DDL 2010-2013 filings, 459,712 cases, about 10% with no decision date. The original Delhi classifier drops those cases and is unchanged; this is a separate `delhi_survival` entry.
 - **Censoring and cutoff:** same rule as Odisha and Bihar. Cutoff 2019-02-28, estimated from pending cases' last listing dates and consistent with the drop in monthly decisions (1,649 in Jan 2019, 607 in Feb, 161 in Mar). 99.9% of pending cases have a next listing date.
-- **Model:** XGBoost AFT, same setup and features as the other states. It reached the 1,500-round cap without early stopping.
-- **Result:** test C-index 0.7499. Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.149 (Family Court 0.769 vs Civil Judge (Senior Division) 0.620); district 0.138 (North West 0.779 vs Shahdara 0.641); case type 0.138 (ct cases 0.710 vs misc dj 0.572).
+- **Model:** XGBoost AFT, same setup and features as the other states (learning rate 0.10, early stopping; best iteration 1113).
+- **Result:** test C-index 0.7508 (random split) and 0.7304 on the time split (train 2010-12 filings, test 2013 filings). Best-worst C-index gap among groups with at least 1,000 test cases: court tier 0.150 (Family Court 0.770 vs Civil Judge (Senior Division) 0.621), district 0.140 (North West 0.780 vs Shahdara 0.640), case type 0.139 (ct cases 0.711 vs cs scj 0.572). On Low/Medium/High tiers (tertiles within the state) Macro F1 is 0.621 overall (see Tier-level results). The C-index is not comparable across states or with the Delhi v1 classifier's Macro F1.
 - **Limitations:** court tiers come from a Delhi-specific rule set, with two tiers that exist only in Delhi (Family Court, Labour / Industrial Tribunal). The C-index is not comparable with the old classifier's Macro F1 of 0.59.
 
 ## Cross-state experiment (Delhi, Odisha, Bihar)
 
-`scripts/experiments/cross_state.py` compares three setups on the same features (case type, court tier, four gender fields; district is excluded because district names are state-specific), with learning rate 0.10 and early stopping.
+`scripts/experiments/cross_state.py` and `cross_state_v2.py` compare models on the same features (case type, court tier, four gender fields; district is excluded because district names are state-specific), with learning rate 0.10 and early stopping. Test C-index (intervals and details in [docs/cross_state_check.md](docs/cross_state_check.md)):
 
-| Evaluated on | In-state | Pooled (+ state feature) | Trained on the other two |
+| Setup | Delhi | Odisha | Bihar |
 |---|---|---|---|
-| Delhi | 0.726 | 0.726 | 0.584 |
-| Odisha | 0.710 | 0.710 | 0.558 |
-| Bihar | 0.755 | 0.755 | 0.583 |
+| in-state | 0.7258 | 0.7043 | 0.7484 |
+| pooled + state input | 0.7258 | 0.7043 | 0.7482 |
+| pooled shared (no state input) | 0.7247 | 0.6973 | 0.7469 |
+| hold-out | 0.5888 | 0.5124 | 0.6047 |
+| in-state, no case type | 0.6498 | 0.6190 | 0.7045 |
+| hold-out, no case type | 0.6044 | 0.5126 | 0.5411 |
 
-- Pooling did not improve any state, and a model trained on the other two states ranks cases only slightly better than chance (0.56-0.58). With these features, per-state models are needed.
-- Part of the hold-out gap reflects label mismatch (state-specific court-tier rules, tiers that exist only in Delhi, different case-type spellings), so it is not a clean measure of how different the states' courts are.
-- Dropping district lowers the in-state C-index by about 0.02-0.04 compared with the full-feature runs, so district carries real signal.
-- The pooled fits reached the 3,000-round cap, and all numbers come from a single train/test split.
+- A pooled model with a `state` input matches the per-state models to four decimals because trees can split on state first; this says nothing about shared structure.
+- Without the state input the pooled model loses 0.007 at most, but court tiers and case-type labels differ by state, so the features still reveal the state.
+- The hold-out scores 0.51-0.60 (Odisha at chance). With case type removed, the hold-out is still 0.045 to 0.163 below the in-state score. Per-state models stay.
+- Court-tier names and rules are still state-specific, so "no case type" is not a fully comparable feature set. Dropping district lowers the in-state C-index by about 0.02-0.04, so district carries real signal. All numbers come from a single train/test split.

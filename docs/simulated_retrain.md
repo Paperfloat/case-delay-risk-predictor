@@ -16,3 +16,5 @@ cases, which neither model saw.
 - One state and one random seed.
 - No control run that retrains without drift, so part of the gain may come from more data alone.
 - "Stale" here means trained on 2010-2011 filings only, which is a harder case than a monthly retrain.
+
+**Note:** this simulation ran before the case-type spelling cleanup, so its numbers describe the earlier Odisha features and have not been rerun.
