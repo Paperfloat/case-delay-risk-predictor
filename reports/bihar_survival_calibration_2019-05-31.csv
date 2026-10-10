@@ -1,4 +1,4 @@
 state,tier,n,censored,median_predicted_days,km_median_days,decided_by_365d,decided_by_730d,decided_by_1095d,decided_by_1825d
-bihar,Low,40730,0.24,1477,1230.0,0.287,0.382,0.469,0.628
-bihar,Medium,41203,0.573,3666,3069.0,0.023,0.065,0.119,0.255
-bihar,High,40589,0.862,11580,,0.003,0.011,0.024,0.058
+bihar,Low,40824,0.242,1533,1240.0,0.285,0.38,0.466,0.626
+bihar,Medium,40859,0.572,3640,3062.0,0.025,0.067,0.121,0.256
+bihar,High,40839,0.86,11450,,0.003,0.012,0.024,0.059

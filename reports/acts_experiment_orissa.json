@@ -1,0 +1,42 @@
+{
+  "state": "orissa",
+  "with_act_info_share": 0.377,
+  "random_split": {
+    "baseline": 0.749,
+    "with_acts": 0.7594,
+    "diff": 0.0104,
+    "ci_low": 0.0097,
+    "ci_high": 0.0113,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.7529,
+        0.7765
+      ],
+      "without_act_info": [
+        0.7334,
+        0.7382
+      ]
+    },
+    "test_rows": 70631
+  },
+  "time_split": {
+    "baseline": 0.7275,
+    "with_acts": 0.7454,
+    "diff": 0.0178,
+    "ci_low": 0.0172,
+    "ci_high": 0.0186,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.714,
+        0.7431
+      ],
+      "without_act_info": [
+        0.7099,
+        0.715
+      ]
+    },
+    "test_rows": 159029
+  }
+}

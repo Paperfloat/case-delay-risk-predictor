@@ -87,6 +87,37 @@ print("Court tier rule set:", cfg.get('tier_ruleset', 'base'))
 df['court_tier_raw'] = df['court_tier']
 df['court_tier'] = df['court_tier_raw'].apply(rule)
 
+SPELLING = [('execuition', 'execution'), ('mislaneous', 'miscellaneous'), ('misclaneous', 'miscellaneous'),
+            ('maintainance', 'maintenance'), ('partion', 'partition')]
+
+
+def type_key(text):
+    """Merge key: ignore case, spaces and punctuation, fix known spellings, drop a trailing 'case(s)'."""
+    t = re.sub(r'[^a-z0-9]', '', str(text).lower())
+    for wrong, right in SPELLING:
+        t = t.replace(wrong, right)
+    t = re.sub(r'complain(?!t)', 'complaint', t)
+    return re.sub(r'(cases|case)$', '', t) or t
+
+
+same = [['gr case', 'g r', 'grcase', 'gr-case', 'gr cases', 'gr'], ['u i', 'ui case', 'ui'],
+        ['2(a)cc', '2 (a) cc', '2a(cc)'], ['complain', 'complaint', 'complaint case'],
+        ['execuition cases', 'execution cases', 'execution'], ['partion suit', 'partition suit'],
+        ['maintainance', 'maintenance case'], ['mislaneous', 'miscellaneous', 'misclaneous-case']]
+for group in same:
+    assert len({type_key(g) for g in group}) == 1, f"merge test failed: {group}"
+for a, b in [('cs', 'cs(i)'), ('mac case', 'mact'), ('gr', 'cr'), ('uc', 'ui'), ('misc', 'miscellaneous'),
+             ('anticipatory bail', 'abp')]:
+    assert type_key(a) != type_key(b), f"wrongly merged: {a} / {b}"
+
+# clean case-type spellings BEFORE picking the top types
+counts = df['type_name_normalized'].value_counts()
+canon = {}
+for name in counts.index:          # sorted by count, so the most common spelling names the group
+    canon.setdefault(type_key(name), name)
+df['type_name_normalized'] = df['type_name_normalized'].map({n: canon[type_key(n)] for n in counts.index})
+print(f"Case types after spelling cleanup: {len(counts)} -> {df['type_name_normalized'].nunique()}")
+
 top = df['type_name_normalized'].value_counts().head(TOP_TYPES).index
 df['type_name_raw_norm'] = df['type_name_normalized']
 df['type_name_normalized'] = df['type_name_normalized'].where(

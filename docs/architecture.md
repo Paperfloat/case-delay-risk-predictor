@@ -68,3 +68,9 @@ The cutoff for each state is estimated from the data (`scripts/pipeline/estimate
 ## Deployment
 
 The API runs on Render's free plan from the image `ghcr.io/<owner>/case-delay-api` (a public package). The free service sleeps when idle, so the first request can take about a minute, and the SQLite audit log lives inside the container, so it resets on every deploy or restart.
+
+## Optional act-aware Delhi model and frontend
+
+`scripts/train_delhi_acts.py` (DVC stage `train_delhi_acts`) trains a second Delhi model on cases with a known act and section (`data/processed/acts_case_level.csv.gz`, built once by `scripts/extract_acts.py` from the Development Data Lab acts-and-sections table). The API loads it at start-up and uses it only when a Delhi request supplies both `primary_act` and `primary_section`; otherwise, or with only one of them, it uses the base model and returns a warning. Its tiers use their own cut points, shown in `tier_basis`. It is not part of the monthly retrain workflow, the drift monitor or the model registry.
+
+`frontend/app.py` is a Streamlit app. It reads the API address from `NYAYA_API_URL` (default `http://localhost:8000`), lists valid values from `/options/<state>`, shows the tier first and the day count in a collapsed section, and takes plain-English labels from `frontend/labels.py`. It is not part of the Docker image, CI or the deploy workflow.

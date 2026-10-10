@@ -1,0 +1,42 @@
+{
+  "state": "bihar",
+  "with_act_info_share": 0.713,
+  "random_split": {
+    "baseline": 0.7969,
+    "with_acts": 0.8068,
+    "diff": 0.01,
+    "ci_low": 0.0094,
+    "ci_high": 0.0107,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.7914,
+        0.807
+      ],
+      "without_act_info": [
+        0.7822,
+        0.7825
+      ]
+    },
+    "test_rows": 122522
+  },
+  "time_split": {
+    "baseline": 0.8008,
+    "with_acts": 0.8074,
+    "diff": 0.0065,
+    "ci_low": 0.006,
+    "ci_high": 0.0069,
+    "verdict": "HELPS",
+    "by_subset": {
+      "with_act_info": [
+        0.808,
+        0.8186
+      ],
+      "without_act_info": [
+        0.769,
+        0.7718
+      ]
+    },
+    "test_rows": 286720
+  }
+}

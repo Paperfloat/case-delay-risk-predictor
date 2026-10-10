@@ -15,3 +15,5 @@ Deploy time is the GitHub Actions run from push to a live, smoke-tested Render s
   cached by DVC, so retraining on brand-new data would take longer.
 - Times come from one laptop run. GitHub runners will differ.
 - Bihar has the most rows and misses the target.
+
+**Re-measured after the case-type cleanup:** a full `dvc repro` (normalize and train stages for all three states) took 28m 51s on the same laptop; per-stage times were not re-recorded.

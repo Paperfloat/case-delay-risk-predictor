@@ -2,7 +2,7 @@
   "delhi": {
     "retrain": false,
     "drifted_features": [],
-    "max_psi": 0.0929,
+    "max_psi": 0.0912,
     "threshold": 0.1,
     "reference_rows": 198757,
     "current_rows": 260955
@@ -12,7 +12,7 @@
     "drifted_features": [
       "type_name_normalized"
     ],
-    "max_psi": 0.1755,
+    "max_psi": 0.1693,
     "threshold": 0.1,
     "reference_rows": 185771,
     "current_rows": 285098
@@ -22,7 +22,7 @@
     "drifted_features": [
       "type_name_normalized"
     ],
-    "max_psi": 0.1703,
+    "max_psi": 0.177,
     "threshold": 0.1,
     "reference_rows": 312568,
     "current_rows": 504241

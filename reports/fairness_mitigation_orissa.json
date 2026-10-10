@@ -1,0 +1,51 @@
+{
+  "state": "orissa",
+  "alpha": 0.5,
+  "noise_std_f1_gap": {
+    "court_tier": 0.01859465172015383,
+    "district_name": 0.017881769190435565,
+    "type_name_normalized": 0.011810856066870797
+  },
+  "results": {
+    "baseline": {
+      "c_index": 0.7490489173800793,
+      "macro_f1": 0.5281031178139846,
+      "f1gap_court_tier": 0.09313446921842278,
+      "cgap_court_tier": 0.09897048274850906,
+      "f1gap_district_name": 0.29517306875761007,
+      "cgap_district_name": 0.1364175573857659,
+      "f1gap_type_name_normalized": 0.16971512605979977,
+      "cgap_type_name_normalized": 0.11595907294639951
+    },
+    "reweight_court_tier": {
+      "c_index": 0.7491640324974131,
+      "macro_f1": 0.5292475139253834,
+      "f1gap_court_tier": 0.10468350789065672,
+      "cgap_court_tier": 0.09993216634700819,
+      "f1gap_district_name": 0.2842664632649909,
+      "cgap_district_name": 0.13240349452960387,
+      "f1gap_type_name_normalized": 0.16987393031501102,
+      "cgap_type_name_normalized": 0.11446605971872859
+    },
+    "reweight_district_name": {
+      "c_index": 0.748953266941235,
+      "macro_f1": 0.5292845019736524,
+      "f1gap_court_tier": 0.10069535444817185,
+      "cgap_court_tier": 0.09835895638608483,
+      "f1gap_district_name": 0.31099480383982664,
+      "cgap_district_name": 0.13443873822630736,
+      "f1gap_type_name_normalized": 0.15643909212789475,
+      "cgap_type_name_normalized": 0.11538743102724203
+    },
+    "reweight_type_name_normalized": {
+      "c_index": 0.7478836348836513,
+      "macro_f1": 0.5283752230275435,
+      "f1gap_court_tier": 0.09908223703856728,
+      "cgap_court_tier": 0.09735357077679385,
+      "f1gap_district_name": 0.32952673458064896,
+      "cgap_district_name": 0.13482160417072853,
+      "f1gap_type_name_normalized": 0.1726973209541739,
+      "cgap_type_name_normalized": 0.1182804367733119
+    }
+  }
+}
