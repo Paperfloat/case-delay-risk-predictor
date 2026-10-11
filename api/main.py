@@ -49,6 +49,13 @@ for state, slug in SLUGS.items():
 if not MODELS:
     raise RuntimeError("no survival models found in models/")
 
+OUTCOMES = {}
+_oc = "api/tier_outcomes.json"
+if os.path.exists(_oc):
+    OUTCOMES = json.load(open(_oc))
+else:
+    print("NOTE: api/tier_outcomes.json not found; no similar-case history will be shown")
+
 ACT_FIELDS = ["primary_act", "primary_section"]
 ACT_MODELS = {}  # optional act-aware model, Delhi only (needs both an act and a section)
 _act_meta = "models/delhi_acts_aft_meta.json"
@@ -158,6 +165,8 @@ def predict(case: CaseInput):
         "model_version": m["meta"]["model_version"],
         "model_variant": "act-aware" if act_vals else "base",
         "tier_basis": m["meta"]["tier_thresholds"]["basis"],
+        "similar_cases": OUTCOMES.get("delhi_acts" if act_vals else state, {}).get(tier),
+        "similar_cases_note": "Share of past cases placed in the same tier that were decided within each number of years (cases filed 2010-2013; records end in 2019).",
         "warnings": warnings,
         "note": NOTE,
     }

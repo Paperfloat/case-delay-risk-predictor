@@ -108,8 +108,10 @@ PURPOSE_LABELS = {
 def humanize_case_type(code):
     state = st.session_state.get("state", "delhi")
     if state == "delhi":
-        return CASE_TYPE_LABELS.get(code) or labels.case_type_label("delhi", code)
-    return labels.case_type_label(state, code)
+        text = CASE_TYPE_LABELS.get(code) or labels.case_type_label("delhi", code)
+    else:
+        text = labels.case_type_label(state, code)
+    return text.replace("unconfirmed", "exact meaning not confirmed")
 
 def humanize_purpose(code):
     return PURPOSE_LABELS.get(code, code.title())
@@ -338,25 +340,52 @@ with col2:
                 f'<div class="stamp" style="color:{color}; border-color:{color};">{tier.upper()} RISK</div>',
                 unsafe_allow_html=True,
             )
-            st.write("The tier ranks this case among the state's cases: Low is the third the model expects to "
-                     "finish fastest, High the third it expects to take longest.")
-            st.caption(f"Model: {result['model_version']} ({result['model_variant']}). {result['tier_basis']}.")
+            st.write("**What this means:** the tier compares this case with past cases in the same state. "
+                     "High means among the slowest third, Low means among the fastest third.")
             for w in result["warnings"]:
                 st.warning(w)
-            with st.expander("Predicted days (not calibrated, use the tier)"):
-                st.write(f"{result['expected_days']:.0f} days")
-                st.caption(result["note"])
 
-            st.markdown("**Contributing factors**")
-            st.caption("Positive makes the expected duration longer, negative makes it shorter (log-days scale)")
+            oc = result.get("similar_cases") or {}
+            years = oc.get("decided_within_years")
+            if years:
+                st.markdown("**How long did similar cases take?**")
+                med = oc.get("median_years")
+                if med:
+                    st.write(f"About half of similar past cases were finished within roughly {med:.1f} years "
+                             f"({round(med * 12)} months).")
+                else:
+                    st.write("More than half of similar past cases were still not finished when the data ends (2019), so the typical wait is longer than the records can show.")
+                st.caption("Out of every 100 past cases that the model put in this same tier:")
+                for yrs, label in [("1", "1 year"), ("2", "2 years"), ("3", "3 years"), ("5", "5 years")]:
+                    share = min(max(float(years[yrs]), 0.0), 1.0)
+                    st.progress(share, text=f"about {round(share * 100)} in 100 were finished within {label}")
+                note = ("These figures come from real cases filed in 2010-2013. They describe cases like this one "
+                        "and are not a promise for any single case.")
+                if state in ("odisha", "bihar"):
+                    note += " Many older decided cases look to be missing from the records for this state, so real times may be shorter."
+                st.caption(note)
+            else:
+                st.write("No history of similar cases is available for this combination.")
+
+            st.markdown("**What pushed this result**")
+            st.caption("The five details that mattered most for this case. A red arrow made a longer wait more likely; "
+                       "a green arrow made a shorter wait more likely.")
             for factor in result["top_contributing_factors"]:
                 label, value = humanize_feature_name(factor["feature"])
-                sign = "+" if factor["shap_value"] > 0 else ""
+                v = factor["shap_value"]
+                size = "strongly" if abs(v) >= 0.5 else "moderately" if abs(v) >= 0.15 else "slightly"
+                up = v > 0
                 st.markdown(
-                    f'<div class="factor-row"><strong>{label}:</strong> {value} '
-                    f'<span style="float:right;">{sign}{factor["shap_value"]:.3f}</span></div>',
+                    f'<div class="factor-row"><strong>{label}:</strong> {value}<br>'
+                    f'<span style="color:{"#A44A3F" if up else "#4A6B4E"} !important;">{"&#9650;" if up else "&#9660;"} '
+                    f'{size} pushes toward a {"longer" if up else "shorter"} wait</span></div>',
                     unsafe_allow_html=True,
                 )
+
+            with st.expander("Technical details"):
+                st.write(f"Model: {result['model_version']} ({result['model_variant']})")
+                st.write(f"Predicted days: {result['expected_days']:.0f} (not calibrated; use the tier and the history above)")
+                st.caption(f"{result['tier_basis']}. {result['note']}")
         except requests.exceptions.ConnectionError:
             st.error(f"Could not connect to the API at {API_URL}.")
         except Exception as e:
