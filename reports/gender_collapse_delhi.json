@@ -1,0 +1,15 @@
+{
+  "state": "delhi",
+  "time_split": {
+    "with_gender": 0.7304,
+    "collapsed": 0.7302,
+    "without": 0.7119,
+    "share_of_gain_kept": 0.99
+  },
+  "random_split": {
+    "with_gender": 0.7508,
+    "collapsed": 0.7493,
+    "without": 0.7323,
+    "share_of_gain_kept": 0.92
+  }
+}

@@ -25,8 +25,8 @@ FIELD_LABELS = {"type_name_normalized": "Case Type", "court_tier": "Court Tier",
                 "female_defendant": "Defendant", "female_petitioner": "Petitioner",
                 "female_adv_def": "Defendant's advocate", "female_adv_pet": "Petitioner's advocate"}
 GENDER_FIELDS = ["female_defendant", "female_petitioner", "female_adv_def", "female_adv_pet"]
-FIELD_LABELS.update({"female_defendant": "Defendant: gender", "female_petitioner": "Petitioner: gender",
-                     "female_adv_def": "Defendant's lawyer: gender", "female_adv_pet": "Petitioner's lawyer: gender"})
+FIELD_LABELS.update({"female_defendant": "Defendant: type", "female_petitioner": "Petitioner: type",
+                     "female_adv_def": "Defendant's lawyer", "female_adv_pet": "Petitioner's lawyer"})
 
 CASE_TYPE_LABELS = {
     "arbtn": "Arbitration", "arbtn cases": "Arbitration Cases", "arb": "Arbitration",
@@ -369,6 +369,6 @@ st.markdown(
     'for resource-planning purposes only. It does not predict how any case will be decided. '
     'Trained on public e-Courts (Development Data Lab) records for cases filed 2010-2013 in Delhi, Odisha and Bihar. '
     'Case type labels are matched to legal terms for Delhi only; codes marked "unconfirmed" are court-clerk '
-    'shorthand without an official public source. Gender fields are inferred from names in the court records and can be wrong.</p>',
+    'shorthand without an official public source. The party fields only record whether a name in the court records could be classified as a person; they say nothing about gender.</p>',
     unsafe_allow_html=True,
 )

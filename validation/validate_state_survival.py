@@ -24,7 +24,8 @@ EXPECTED_COLS = {
     "date_first_list", "date_last_list", "date_next_list", "event", "type_name_s",
     "purpose_name_s", "disp_name_s", "district_name", "court_name", "days_to_disposition",
     "date_last_list_clean", "multiple_hearings", "court_tier", "type_name_normalized",
-    "court_tier_raw", "type_name_raw_norm"}
+    "court_tier_raw", "type_name_raw_norm",
+    "female_defendant_raw", "female_petitioner_raw", "female_adv_def_raw", "female_adv_pet_raw"}
 TIERS = ["Chief Judicial Magistrate", "Sub-Divisional Judicial Magistrate",
          "Civil Judge (Senior Division)", "District and Sessions Judge",
          "Judicial Magistrate First Class", "Civil Judge cum JMFC", "Other / unclear",
@@ -33,7 +34,7 @@ TIERS = ["Chief Judicial Magistrate", "Sub-Divisional Judicial Magistrate",
 
 results = []
 header = pd.read_csv(PATH, nrows=0).columns.tolist()
-results.append(("schema: column set matches (32 columns)", set(header) == EXPECTED_COLS and len(header) == 32))
+results.append(("schema: column set matches (36 columns)", set(header) == EXPECTED_COLS and len(header) == 36))
 
 df = pd.read_csv(PATH, dtype=str, usecols=["event", "days_to_disposition", "date_of_filing",
                                             "date_last_list_clean", "court_tier", "type_name_normalized"])

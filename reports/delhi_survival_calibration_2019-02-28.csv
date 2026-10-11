@@ -1,4 +1,4 @@
 state,tier,n,censored,median_predicted_days,km_median_days,decided_by_365d,decided_by_730d,decided_by_1095d,decided_by_1825d
-delhi,Low,22936,0.012,89,118,0.776,0.894,0.939,0.974
-delhi,Medium,23020,0.041,411,488,0.388,0.661,0.797,0.911
-delhi,High,23001,0.26,1171,1616,0.134,0.25,0.35,0.559
+delhi,Low,22812,0.012,87,118,0.777,0.894,0.939,0.974
+delhi,Medium,23168,0.043,419,489,0.388,0.66,0.794,0.908
+delhi,High,22977,0.258,1117,1610,0.136,0.253,0.353,0.561
