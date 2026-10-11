@@ -105,8 +105,8 @@ PURPOSE_LABELS = {
     "summons": "Summons", "transfer petition": "Transfer Petition", "unknown": "Not specified",
 }
 
-def humanize_case_type(code):
-    state = st.session_state.get("state", "delhi")
+def humanize_case_type(code, state=None):
+    state = state or st.session_state.get("state", "delhi")
     if state == "delhi":
         text = CASE_TYPE_LABELS.get(code) or labels.case_type_label("delhi", code)
     else:
@@ -300,8 +300,8 @@ with col2:
                          format_func=lambda k: STATE_LABELS[k], key="state")
     opts = api_get(f"/options/{state}")
 
-    def case_label(code):
-        return humanize_case_type(code)
+    def case_label(code, state=state):
+        return humanize_case_type(code, state)
 
     formats = {"type_name_normalized": case_label}
     for g in GENDER_FIELDS:
