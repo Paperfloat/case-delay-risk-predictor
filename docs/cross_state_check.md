@@ -24,3 +24,5 @@ Conclusion: knowledge does not transfer between states with these features, so p
 **Limits.** One split. Court-tier names and rules are still state-specific, so "no case type" is not a fully comparable
 feature set. In-state numbers here are lower than the saved models' C-index (0.7508 / 0.7490 / 0.7969) because district
 is excluded. The bootstrap resamples test cases only.
+
+**Note after the party-field change:** this check ran with the earlier male / female / unclear party values and was not rerun.

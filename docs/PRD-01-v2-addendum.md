@@ -11,14 +11,14 @@ This addendum records how the project differs from the original PRD-01 and the s
 | Geography | Delhi; multi-state was out of scope | Delhi, Odisha, Bihar, config-driven so another state is a config entry |
 | Evaluation metric | Macro F1 | C-index (ranking quality) with bootstrap confidence intervals per group, plus precision, recall and Macro F1 on tiers derived from predicted duration |
 | Serving | Single-state classifier API | Multi-state survival API with audit log, deployed to Render (free plan) by CI/CD; the v1 API is kept as `api/legacy_classifier.py` |
-| Features | Filing-time features, with process history as a possible later addition | Filing-time features only; the act and section are used only by an optional Delhi model; process history is not used |
+| Features | Filing-time features, with process history as a possible later addition | Filing-time features only; the four party fields record only whether a name could be classified as a person (not gender); the act and section are used only by an optional Delhi model; process history is not used |
 
 ## Status against the v1 success metrics and requirements
 
 | Requirement | Status |
 |---|---|
-| Macro F1 of at least 0.75 | **Not met.** The v1 classifier reached 0.59. For the survival models, predicted days are turned into Low / Medium / High (tertiles within each state) and scored on the test split: Macro F1 is 0.62 (Delhi), 0.53 (Odisha) and 0.51 (Bihar). Odisha and Bihar cover only cases whose tier is known (88% and 74%). See `docs/survival_tier_evaluation.md`. The C-index (0.75 Delhi, 0.75 Odisha, 0.80 Bihar on a random split; 0.73, 0.73, 0.80 on a time split) measures ranking and is a different metric. |
-| Case-type subgroup gap under 10% | **Not met.** The v1 classifier's gap was about 35%. For the survival models the best-worst Macro F1 gap by case type is 0.24, 0.17, 0.42 (Delhi, Odisha, Bihar) and the C-index gap is 0.14, 0.12, 0.27. Court-tier gaps are 0.17, 0.09, 0.18 and district gaps 0.15, 0.30, 0.25 (Macro F1): all but Odisha's court tier (0.093, within noise of 0.10) are above the target. Reweighting training cases by group did not close any gap (docs/fairness_mitigation.md). |
+| Macro F1 of at least 0.75 | **Not met.** The v1 classifier reached 0.59. For the survival models, predicted days are turned into Low / Medium / High (tertiles within each state) and scored on the test split: Macro F1 is 0.62 (Delhi), 0.52 (Odisha) and 0.50 (Bihar). Odisha and Bihar cover only cases whose tier is known (88% and 74%). See `docs/survival_tier_evaluation.md`. The C-index (0.75, 0.75, 0.79 on a random split; 0.73, 0.73, 0.80 on a time split, Delhi / Odisha / Bihar) measures ranking and is a different metric. |
+| Case-type subgroup gap under 10% | **Not met.** The v1 classifier's gap was about 35%. For the survival models the best-worst Macro F1 gap by case type is 0.26, 0.19, 0.40 (Delhi, Odisha, Bihar) and the C-index gap is 0.14, 0.12, 0.28. Court-tier gaps are 0.17, 0.08, 0.19 and district gaps 0.17, 0.29, 0.23 (Macro F1): all but Odisha's court tier (0.076, not clearly below 0.10 given the sampling noise) are above the target. Reweighting training cases by group did not close any gap (docs/fairness_mitigation.md). |
 | Subgroup reporting on every training run, with intervals on thin slices | **Met for the survival models.** Reports for court tier, district and case type, with 95% bootstrap intervals, are written on every training run. Groups under 1,000 test cases are not reported. |
 | Per-prediction explanation (top five factors) | **Met.** Every API response includes the top five TreeSHAP factors on a log-days scale. |
 | Audit log of predictions | **Met** (SQLite table with state and model version). |
@@ -32,7 +32,7 @@ This addendum records how the project differs from the original PRD-01 and the s
 ## Proposed v2 targets (drafts)
 
 1. **Report, don't hide:** every release reports the best-worst C-index gap by court tier, district and case type with intervals, and flags any group whose interval lies entirely below 0.65.
-2. **Court-tier gap:** at most 0.10 C-index in each state (currently 0.099 Odisha, 0.150 Delhi, 0.194 Bihar).
+2. **Court-tier gap:** at most 0.10 C-index in each state (currently 0.104 Odisha, 0.145 Delhi, 0.193 Bihar).
 3. **Calibration:** before any predicted day count is shown to users, a per-tier Kaplan-Meier check must show that observed decision rates rise from Low to High tier within each state.
 4. **Time-split reporting:** quote the time-split C-index alongside the random-split value in every results table.
 
@@ -45,3 +45,4 @@ This addendum records how the project differs from the original PRD-01 and the s
 - Fairness gaps are above target for tier Macro F1 and C-index in nearly every state; the one mitigation tried (reweighting by group) did not help.
 - Retraining on genuinely new data (not a fixed 2010-2013 snapshot) is untested, and Bihar retraining exceeds 15 minutes.
 - A persistent audit log on the live host (the free plan resets it on every deploy).
+- Party fields: the models use only whether a name was classified as a person (docs/party_fields_experiment.md). What falls in the "not classified" group (for example organisations) has not been inspected, and group differences in the High-tier share remain.

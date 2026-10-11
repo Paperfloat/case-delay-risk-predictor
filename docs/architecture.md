@@ -74,3 +74,7 @@ The API runs on Render's free plan from the image `ghcr.io/<owner>/case-delay-ap
 `scripts/train_delhi_acts.py` (DVC stage `train_delhi_acts`) trains a second Delhi model on cases with a known act and section (`data/processed/acts_case_level.csv.gz`, built once by `scripts/extract_acts.py` from the Development Data Lab acts-and-sections table). The API loads it at start-up and uses it only when a Delhi request supplies both `primary_act` and `primary_section`; otherwise, or with only one of them, it uses the base model and returns a warning. Its tiers use their own cut points, shown in `tier_basis`. It is not part of the monthly retrain workflow, the drift monitor or the model registry.
 
 `frontend/app.py` is a Streamlit app. It reads the API address from `NYAYA_API_URL` (default `http://localhost:8000`), lists valid values from `/options/<state>`, shows the tier first and the day count in a collapsed section, and takes plain-English labels from `frontend/labels.py`. It is not part of the Docker image, CI or the deploy workflow.
+
+## Party fields
+
+`normalize.py` reduces the four party fields (defendant, petitioner and each side's lawyer) to "known" (the name was classified as a person) or "unclear" before training, and keeps the original values in `*_raw` columns. See docs/party_fields_experiment.md.
