@@ -18,3 +18,5 @@ cases, which neither model saw.
 - "Stale" here means trained on 2010-2011 filings only, which is a harder case than a monthly retrain.
 
 **Note:** this simulation ran before the case-type spelling cleanup, so its numbers describe the earlier Odisha features and have not been rerun.
+
+**Note after the party-field change:** the simulation ran before the case-type cleanup and the party-field change and was not rerun.

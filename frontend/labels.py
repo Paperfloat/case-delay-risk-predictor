@@ -119,6 +119,10 @@ def case_type_label(state, code):
 
 def gender_label(code):
     c = str(code).strip().lower()
+    if c == "known":
+        return "Person (name classified)"
+    if c == "unclear":
+        return "Not classified (for example an organisation or an unclear name)"
     if c in ("missing", "nan", ""):
         return "Not recorded"
     try:

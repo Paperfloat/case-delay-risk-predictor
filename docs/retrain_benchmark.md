@@ -17,3 +17,5 @@ Deploy time is the GitHub Actions run from push to a live, smoke-tested Render s
 - Bihar has the most rows and misses the target.
 
 **Re-measured after the case-type cleanup:** a full `dvc repro` (normalize and train stages for all three states) took 28m 51s on the same laptop; per-stage times were not re-recorded.
+
+**Re-measured after the party-field change:** a full `dvc repro` (normalize and training for all three states plus the act-aware Delhi model) took 27m 18s on the same laptop; per-stage times were not recorded.

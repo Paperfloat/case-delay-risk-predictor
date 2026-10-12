@@ -1,6 +1,6 @@
 # Fairness case study: where does the delay model rank cases well, and where doesn't it?
 
-Numbers in this document come from the models retrained after the case-type spelling cleanup (`reports/*_survival_fairness_*.csv`).
+Numbers in this document come from the models retrained after the case-type spelling cleanup and the party-field change (docs/party_fields_experiment.md) (`reports/*_survival_fairness_*.csv`).
 
 ## Question
 
@@ -20,9 +20,9 @@ For every state and dimension, the best and worst groups' intervals do not overl
 
 | State | Court tier gap | District gap | Case type gap |
 |---|---|---|---|
-| Delhi | 0.150 | 0.140 | 0.139 |
-| Odisha | 0.099 | 0.136 | 0.116 |
-| Bihar | 0.194 | 0.211 | 0.273 |
+| Delhi | 0.145 | 0.138 | 0.144 |
+| Odisha | 0.104 | 0.141 | 0.115 |
+| Bihar | 0.193 | 0.225 | 0.281 |
 
 ## Finding 2: civil suits are consistently the hardest to rank
 
@@ -30,31 +30,31 @@ Court tier C-index (n = test cases; the worst tier in each state is in bold):
 
 | Tier | Delhi | Odisha | Bihar |
 |---|---|---|---|
-| Civil Judge (Senior Division) | **0.621 (n=12,973)** | **0.689 (n=12,904)** | **0.659 (n=7,065)** |
-| District and Sessions Judge | 0.730 (n=27,984) | 0.765 (n=9,969) | 0.853 (n=29,998) |
-| Chief Judicial Magistrate | 0.736 (n=20,259) | 0.741 (n=22,603) | 0.740 (n=77,483) |
-| Labour / Industrial Tribunal | 0.721 (n=3,691) |  |  |
-| Family Court | 0.770 (n=4,050) |  |  |
-| Other / unclear |  | 0.724 (n=1,558) | 0.774 (n=2,613) |
-| Sub-Divisional Judicial Magistrate |  | 0.734 (n=13,117) |  |
-| Civil Judge cum JMFC |  | 0.766 (n=1,746) |  |
-| Judicial Magistrate First Class |  | 0.788 (n=7,551) |  |
-| Civil Judge (division unclear) |  |  | 0.736 (n=5,213) |
+| Civil Judge (Senior Division) | **0.621 (n=12,973)** | **0.685 (n=12,904)** | **0.658 (n=7,065)** |
+| District and Sessions Judge | 0.729 (n=27,984) | 0.763 (n=9,969) | 0.851 (n=29,998) |
+| Chief Judicial Magistrate | 0.736 (n=20,259) | 0.736 (n=22,603) | 0.734 (n=77,483) |
+| Labour / Industrial Tribunal | 0.695 (n=3,691) |  |  |
+| Family Court | 0.766 (n=4,050) |  |  |
+| Other / unclear |  | 0.708 (n=1,558) | 0.768 (n=2,613) |
+| Sub-Divisional Judicial Magistrate |  | 0.730 (n=13,117) |  |
+| Civil Judge cum JMFC |  | 0.764 (n=1,746) |  |
+| Judicial Magistrate First Class |  | 0.789 (n=7,551) |  |
+| Civil Judge (division unclear) |  |  | 0.735 (n=5,213) |
 
-Worst and best tier with 95% intervals: Delhi: Civil Judge (Senior Division) 0.621 [0.615-0.627] vs Family Court 0.770 [0.762-0.775]; Odisha: Civil Judge (Senior Division) 0.689 [0.683-0.695] vs Judicial Magistrate First Class 0.788 [0.781-0.798]; Bihar: Civil Judge (Senior Division) 0.659 [0.649-0.668] vs District and Sessions Judge 0.853 [0.851-0.855].
+Worst and best tier with 95% intervals: Delhi: Civil Judge (Senior Division) 0.621 [0.615-0.627] vs Family Court 0.766 [0.759-0.771]; Odisha: Civil Judge (Senior Division) 0.685 [0.678-0.691] vs Judicial Magistrate First Class 0.789 [0.781-0.798]; Bihar: Civil Judge (Senior Division) 0.658 [0.648-0.666] vs District and Sessions Judge 0.851 [0.849-0.853].
 
 - The Civil Judge (Senior Division) tier is the worst-ranked tier in all three states, and its interval does not overlap the best tier's in 3 of the 3 states.
-- Delhi's worst case type is "cs scj" (C-index 0.572) is also a civil suit category.
-- Chief Judicial Magistrate courts score 0.736-0.741 across the three states.
-- District and Sessions Judge courts score 0.730-0.853 across the three states.
+- Delhi's worst case type is "civ suit" (C-index 0.566) is also a civil suit category.
+- Chief Judicial Magistrate courts score 0.734-0.736 across the three states.
+- District and Sessions Judge courts score 0.729-0.851 across the three states.
 - The best-ranked tier is different in each state (Delhi: Family Court, Odisha: Judicial Magistrate First Class, Bihar: District and Sessions Judge), so there is no single "easy" kind of court.
 
-**Why this might happen (not tested):** civil suits can take very different amounts of time depending on procedural events after filing (service of notice, adjournments, evidence), and those are not available when the model makes its prediction. The model only sees case type, court tier, district and gender fields, so it has little to separate fast civil suits from slow ones.
+**Why this might happen (not tested):** civil suits can take very different amounts of time depending on procedural events after filing (service of notice, adjournments, evidence), and those are not available when the model makes its prediction. The model only sees case type, court tier, district and party fields, so it has little to separate fast civil suits from slow ones.
 
 ## Finding 3: some of the worst-looking groups are thin or oddly recorded
 
-- **Vaishali (Bihar)** has the lowest district C-index (0.617) with a wide interval (0.520-0.686), and 96% of its test cases are pending, against 47% in Patna. A follow-up (docs/bihar_pending_investigation.md) found that its pending cases have recent hearing dates (0.4% are stale) and that its recorded decisions fall only in 2018-2020, so it is not clearly a recording artifact; the cause is unexplained. Districts with a pending share of about 95% or higher are treated as unreliable.
-- **Case types** with the weakest ranking in Bihar: "regular bail" 0.569 [0.557-0.578]; "gr police cases" 0.575 [0.560-0.590], barely above random, which means the model has little ranking ability for them.
+- **Vaishali (Bihar)** has the lowest district C-index (0.601) with a wide interval (0.529-0.667), and 96% of its test cases are pending, against 47% in Patna. A follow-up (docs/bihar_pending_investigation.md) found that its pending cases have recent hearing dates (0.4% are stale) and that its recorded decisions fall only in 2018-2020, so it is not clearly a recording artifact; the cause is unexplained. Districts with a pending share of about 95% or higher are treated as unreliable.
+- **Case types** with the weakest ranking in Bihar: "regular bail" 0.557 [0.545-0.567]; "gr police cases" 0.568 [0.550-0.581], barely above random, which means the model has little ranking ability for them.
 - **Censoring rates differ by group** (for example 6% for Delhi's Civil Judge (Senior Division) cases against 53% for Odisha's best tier), so the C-index is not computed on equally informative samples across groups. Odisha's best tier is among the most censored, so censoring alone does not explain the gaps.
 
 ## Fairness mitigation
@@ -64,7 +64,7 @@ Reweighting training cases by court tier, district or case type did not close an
 ## What this audit does not show
 
 - **Calibration by group.** The overall tier check (docs/calibration_check.md) shows the tiers are correctly ordered, but it was not repeated by court tier or district. The C-index checks ordering within a group, not whether predicted durations or tiers are systematically too long or too short for it.
-- **Tier assignment rates.** I have not checked whether some courts or districts receive the High tier far more often than their observed outcomes justify.
+- **Tier assignment rates.** I have not checked whether some courts or districts receive the High tier far more often than their observed outcomes justify (the party fields were checked this way, see docs/party_fields_experiment.md).
 - **Real-world impact.** Nothing here measures what happens when someone acts on the tier.
 - **Causes.** The patterns above are associations, and the explanations are hypotheses.
 
@@ -81,4 +81,4 @@ Reweighting training cases by court tier, district or case type did not close an
 1. Repeat the Kaplan-Meier tier check by court tier and district (the overall check is done).
 2. Tier assignment rates by court tier and district.
 3. Find out why Vaishali and Gaya (about 95% pending) look the way they do; this needs the dataset's documentation.
-4. The act and section of a case were tested as extra features: they help a Delhi model (+0.043 time-split C-index on cases with both fields known) and are used there as an optional model, but they are mixed in Odisha and hurt in Bihar (docs/acts_sections_experiment.md).
+4. The act and section of a case were tested as extra features: they help a Delhi model (+0.045 time-split C-index on cases with both fields known) and are used there as an optional model, but they are mixed in Odisha and hurt in Bihar (docs/acts_sections_experiment.md).

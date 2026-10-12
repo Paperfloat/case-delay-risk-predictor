@@ -1,0 +1,117 @@
+{
+  "state": "orissa",
+  "time_split": {
+    "with": 0.7275,
+    "without": 0.7183,
+    "diff": 0.0092,
+    "ci_low": 0.0086,
+    "ci_high": 0.0101,
+    "verdict": "gender fields HELP"
+  },
+  "random_split": {
+    "with": 0.749,
+    "without": 0.7343,
+    "diff": 0.0147,
+    "ci_low": 0.0137,
+    "ci_high": 0.0156,
+    "verdict": "gender fields HELP"
+  },
+  "by_gender": [
+    {
+      "model": "with gender",
+      "field": "female_defendant",
+      "value": "0 male",
+      "n": 48857,
+      "share_High": 0.349,
+      "c_index": 0.7466
+    },
+    {
+      "model": "with gender",
+      "field": "female_defendant",
+      "value": "1 female",
+      "n": 12160,
+      "share_High": 0.302,
+      "c_index": 0.7335
+    },
+    {
+      "model": "with gender",
+      "field": "female_defendant",
+      "value": "-9998 unclear",
+      "n": 9556,
+      "share_High": 0.292,
+      "c_index": 0.7747
+    },
+    {
+      "model": "with gender",
+      "field": "female_petitioner",
+      "value": "-9998 unclear",
+      "n": 38433,
+      "share_High": 0.385,
+      "c_index": 0.7553
+    },
+    {
+      "model": "with gender",
+      "field": "female_petitioner",
+      "value": "0 male",
+      "n": 22928,
+      "share_High": 0.276,
+      "c_index": 0.7446
+    },
+    {
+      "model": "with gender",
+      "field": "female_petitioner",
+      "value": "1 female",
+      "n": 9253,
+      "share_High": 0.259,
+      "c_index": 0.7259
+    },
+    {
+      "model": "without gender",
+      "field": "female_defendant",
+      "value": "0 male",
+      "n": 48857,
+      "share_High": 0.341,
+      "c_index": 0.7314
+    },
+    {
+      "model": "without gender",
+      "field": "female_defendant",
+      "value": "1 female",
+      "n": 12160,
+      "share_High": 0.319,
+      "c_index": 0.7195
+    },
+    {
+      "model": "without gender",
+      "field": "female_defendant",
+      "value": "-9998 unclear",
+      "n": 9556,
+      "share_High": 0.294,
+      "c_index": 0.7626
+    },
+    {
+      "model": "without gender",
+      "field": "female_petitioner",
+      "value": "-9998 unclear",
+      "n": 38433,
+      "share_High": 0.395,
+      "c_index": 0.7386
+    },
+    {
+      "model": "without gender",
+      "field": "female_petitioner",
+      "value": "0 male",
+      "n": 22928,
+      "share_High": 0.257,
+      "c_index": 0.7325
+    },
+    {
+      "model": "without gender",
+      "field": "female_petitioner",
+      "value": "1 female",
+      "n": 9253,
+      "share_High": 0.247,
+      "c_index": 0.7124
+    }
+  ]
+}

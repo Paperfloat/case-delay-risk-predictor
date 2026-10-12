@@ -118,6 +118,15 @@ for name in counts.index:          # sorted by count, so the most common spellin
 df['type_name_normalized'] = df['type_name_normalized'].map({n: canon[type_key(n)] for n in counts.index})
 print(f"Case types after spelling cleanup: {len(counts)} -> {df['type_name_normalized'].nunique()}")
 
+# party fields: keep only whether the name was classified as a person, not the inferred gender
+GENDER_COLS = ["female_defendant", "female_petitioner", "female_adv_def", "female_adv_pet"]
+assert all(c in df.columns for c in GENDER_COLS), "expected gender columns are missing"
+for g in GENDER_COLS:
+    df[g + "_raw"] = df[g]
+    df[g] = (df[g].isna() | df[g].astype(str).str.startswith("-")).map({True: "unclear", False: "known"})
+print("Party fields (known = name classified as a person):",
+      {g: df[g].value_counts(normalize=True).round(3).to_dict() for g in GENDER_COLS})
+
 top = df['type_name_normalized'].value_counts().head(TOP_TYPES).index
 df['type_name_raw_norm'] = df['type_name_normalized']
 df['type_name_normalized'] = df['type_name_normalized'].where(

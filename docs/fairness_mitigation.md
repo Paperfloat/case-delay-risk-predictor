@@ -27,3 +27,5 @@ resampling only, not variation from retraining. Not tried: separate models per g
 interaction features, or collecting more features. The mitigated models were not saved.
 
 **Note:** gaps here can differ from the tier report by up to about 0.01 (for example Delhi case type 0.248 here against 0.240) because this script derives predicted tiers from tertiles of its own predictions and the tier report uses the saved thresholds.
+
+**Note after the party-field change:** this experiment ran with the earlier male / female / unclear party values. The baseline gaps changed slightly afterwards (see docs/survival_tier_evaluation.md). The mitigation was not rerun.

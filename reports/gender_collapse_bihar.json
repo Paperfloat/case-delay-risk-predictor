@@ -1,0 +1,15 @@
+{
+  "state": "bihar",
+  "time_split": {
+    "with_gender": 0.8008,
+    "collapsed": 0.7995,
+    "without": 0.7917,
+    "share_of_gain_kept": 0.86
+  },
+  "random_split": {
+    "with_gender": 0.7969,
+    "collapsed": 0.7937,
+    "without": 0.7788,
+    "share_of_gain_kept": 0.82
+  }
+}

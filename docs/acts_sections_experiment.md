@@ -26,3 +26,5 @@ but hurts on the time split, so it is not used for Bihar. Act information is not
 tell from the data when it is entered. The gain applies only to cases where the user supplies both fields.
 
 Earlier runs (all cases, and cases with an act): `reports/acts_experiment_*.json`, `reports/acts_experiment_subset_*.json`.
+
+**Note after the party-field change:** the experiments above used the earlier male / female / unclear party values. Delhi's act-aware model was retrained with the collapsed party fields: time split 0.7429 without acts, 0.7882 with (+0.0453, 95% +0.0434 to +0.0472); random split 0.7513 to 0.7943.

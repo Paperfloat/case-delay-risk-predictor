@@ -1,0 +1,15 @@
+{
+  "state": "orissa",
+  "time_split": {
+    "with_gender": 0.7275,
+    "collapsed": 0.7259,
+    "without": 0.7183,
+    "share_of_gain_kept": 0.83
+  },
+  "random_split": {
+    "with_gender": 0.749,
+    "collapsed": 0.7459,
+    "without": 0.7343,
+    "share_of_gain_kept": 0.79
+  }
+}
