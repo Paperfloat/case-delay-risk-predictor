@@ -486,7 +486,7 @@ stages:
       size: 4788
     - path: models/orissa_aft_meta.json
       hash: md5
-      md5: 0f2b9bfc1d11e1203e388eedd6a06e70
+      md5: d55c2eaeb3202160f0e9fb45e6e365f2
       size: 758
     - path: reports/orissa_survival_fairness_2019-02-28.csv
       hash: md5
@@ -521,7 +521,7 @@ stages:
       size: 5434
     - path: models/bihar_aft_meta.json
       hash: md5
-      md5: dac2928aa876b04aa0c00a1cb10ec591
+      md5: 9ddc9313d3ce960b7e2f57ff82c39fe1
       size: 753
     - path: reports/bihar_survival_fairness_2019-05-31.csv
       hash: md5
